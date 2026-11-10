@@ -185,8 +185,8 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
   Widget _albumHead(SpotifyItem item) {
     final year = (item.releaseDate ?? '').length >= 4 ? item.releaseDate!.substring(0, 4) : null;
     final meta = [
-      if (item.subtitle != null) item.subtitle!,
-      if (year != null) year,
+      ?item.subtitle,
+      ?year,
       if (widget.kind == 'album' && item.totalTracks != null) '${item.totalTracks}곡',
       if (widget.kind == 'track' && item.durationMs != null) _duration(item.durationMs!),
     ].join(' · ');
