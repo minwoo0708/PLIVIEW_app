@@ -133,12 +133,12 @@ class SettingsScreen extends ConsumerWidget {
         onTap: onTap,
         behavior: HitTestBehavior.opaque,
         child: Container(
-          height: 60,
-          padding: const EdgeInsets.all(16),
+          constraints: const BoxConstraints(minHeight: 60),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(AppRadius.cover)),
           child: Row(children: [
             Expanded(
-              child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
+              child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(title,
                     style: AppText.gothic(15, weight: FontWeight.w600, color: danger ? const Color(0xFFD64545) : AppColors.textPrimary)),
                 const SizedBox(height: 2),
