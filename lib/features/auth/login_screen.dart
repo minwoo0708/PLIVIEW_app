@@ -75,7 +75,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   children: [
                     const BrandChip(),
                     const SizedBox(height: 14),
-                    Text('다시 만나서\n반가워요', style: AppText.jua(34)),
+                    Text('다시 만나서\n반가워요', style: AppText.display(34)),
                     const SizedBox(height: 14),
                     Text('듣고 남긴 점수를 이어서 기록해요', style: AppText.gothic(14, color: AppColors.white75)),
                     const SizedBox(height: 28),

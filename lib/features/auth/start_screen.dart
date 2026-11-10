@@ -25,7 +25,7 @@ class StartScreen extends StatelessWidget {
               children: [
                 const BrandChip(),
                 const SizedBox(height: 14),
-                Text('듣고, 점수 주고,\n같이 고르는 플리', style: AppText.jua(34, height: 44 / 34)),
+                Text('듣고, 점수 주고,\n같이 고르는 플리', style: AppText.display(34, height: 44 / 34)),
                 const SizedBox(height: 14),
                 Text(
                   '곡도 앨범도 플레이리스트도\n내 기준으로 기록해요',

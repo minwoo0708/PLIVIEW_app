@@ -49,7 +49,7 @@ class HomeScreen extends ConsumerWidget {
               Text('안녕하세요, ${user?.nickname ?? ''}님',
                   style: AppText.gothic(13, weight: FontWeight.w500, color: AppColors.white70)),
               const SizedBox(height: 4),
-              Text('오늘은 뭘\n들어볼까요?', style: AppText.jua(30, height: 38 / 30)),
+              Text('오늘은 뭘\n들어볼까요?', style: AppText.display(30, height: 38 / 30)),
               const SizedBox(height: 16),
               // 히어로 카드는 인기 앨범이 있을 때만 보여 줍니다.
               if (weekly.hasValue && weekly.value == null) ...[
@@ -148,7 +148,7 @@ class _HeroCard extends StatelessWidget {
             child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
               Expanded(
                 child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(item.item.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: AppText.jua(22)),
+                  Text(item.item.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: AppText.display(22)),
                   const SizedBox(height: 2),
                   Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis,
                       style: AppText.mixed(13, weight: FontWeight.w500, color: AppColors.white85)),
@@ -269,7 +269,7 @@ class _EmptyHeroCard extends StatelessWidget {
               child: Text('이주의 앨범', style: AppText.gothic(11, weight: FontWeight.w800, color: AppColors.ink)),
             ),
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('첫 리뷰를 남겨 보세요', style: AppText.jua(22)),
+              Text('첫 리뷰를 남겨 보세요', style: AppText.display(22)),
               const SizedBox(height: 2),
               Text('리뷰가 쌓이면 이번 주 인기 앨범이 여기에 떠요',
                   style: AppText.gothic(13, weight: FontWeight.w500, color: AppColors.white85)),

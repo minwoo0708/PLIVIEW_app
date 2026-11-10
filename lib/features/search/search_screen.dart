@@ -172,7 +172,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('무엇을 찾고 있나요?', style: AppText.jua(24)),
+                  Text('무엇을 찾고 있나요?', style: AppText.display(24)),
                   const SizedBox(height: 14),
                   _searchBox(),
                   const SizedBox(height: 14),

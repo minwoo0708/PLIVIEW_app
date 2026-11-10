@@ -44,7 +44,7 @@ class ArtistScreen extends ConsumerWidget {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
-              child: Text(name ?? '아티스트', style: AppText.jua(28), maxLines: 2, overflow: TextOverflow.ellipsis),
+              child: Text(name ?? '아티스트', style: AppText.display(28), maxLines: 2, overflow: TextOverflow.ellipsis),
             ),
             Expanded(
               child: albums.when(

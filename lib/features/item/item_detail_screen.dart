@@ -228,7 +228,7 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
         ]),
       ),
       const SizedBox(height: 14),
-      Text(item.name, style: AppText.jua(28)),
+      Text(item.name, style: AppText.display(28)),
       const SizedBox(height: 14),
       Text(meta, style: AppText.mixed(13, color: AppColors.white75)),
     ]);
@@ -244,7 +244,7 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
         Text('아직 리뷰가 없어요', style: AppText.gothic(14, color: AppColors.white75))
       else
         Row(children: [
-          Text(avg.toStringAsFixed(1), style: AppText.jua(34)),
+          Text(avg.toStringAsFixed(1), style: AppText.display(34)),
           const SizedBox(width: 10),
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             StarRating(value: avg),
@@ -343,7 +343,7 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Expanded(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(item.name, maxLines: 3, overflow: TextOverflow.ellipsis, style: AppText.jua(30, height: 38 / 30)),
+          Text(item.name, maxLines: 3, overflow: TextOverflow.ellipsis, style: AppText.display(30, height: 38 / 30)),
           const SizedBox(height: 8),
           Text(
             'by ${item.ownerName ?? item.ownerId ?? ''}',
@@ -379,7 +379,7 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
               Text(label,
                   style: AppText.mixed(12, weight: FontWeight.w500, color: filled ? AppColors.white85 : AppColors.textSecondary)),
               const SizedBox(height: 2),
-              Text(value, style: AppText.jua(32, color: filled ? Colors.white : AppColors.primary)),
+              Text(value, style: AppText.display(32, color: filled ? Colors.white : AppColors.primary)),
             ]),
           ),
         );
