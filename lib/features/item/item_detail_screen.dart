@@ -302,29 +302,21 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
   List<Widget> _trackList(SpotifyItem item) => [
         const SizedBox(height: 18),
         Text('수록곡', style: AppText.gothic(16, weight: FontWeight.w800, color: AppColors.textPrimary)),
+        const SizedBox(height: 4),
+        Text('곡을 누르면 곡 평가를 남길 수 있어요', style: AppText.gothic(12, color: AppColors.textSecondary)),
         const SizedBox(height: 10),
         for (var i = 0; i < item.tracks.length; i++)
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(AppRadius.scoreButton),
-                border: Border.all(color: AppColors.border),
-              ),
-              child: Row(children: [
-                Text('${i + 1}', style: AppText.grotesk(13, weight: FontWeight.w500, color: AppColors.primary)),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(item.tracks[i].name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppText.mixed(14, weight: FontWeight.w800, color: AppColors.textPrimary)),
-                ),
-                if (item.tracks[i].durationMs != null)
-                  Text(_duration(item.tracks[i].durationMs!), style: AppText.grotesk(12, color: AppColors.textSecondary)),
-              ]),
+            child: _TrackRow(
+              number: i + 1,
+              track: item.tracks[i],
+              duration: item.tracks[i].durationMs == null ? null : _duration(item.tracks[i].durationMs!),
+              onTap: () async {
+                await context.push(Routes.item('track', item.tracks[i].id));
+                // 곡 평가를 남기고 돌아오면 곡 평점을 새로 불러옵니다.
+                if (mounted) ref.invalidate(itemSummaryProvider(('track', item.tracks[i].id)));
+              },
             ),
           ),
       ];
@@ -499,5 +491,67 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
         },
       ),
     ]);
+  }
+}
+
+/// 수록곡 한 줄: 번호 · 곡 이름 · (모두의 평균 별점 / 내 별점) · 길이.
+/// 곡마다 요약을 따로 불러와서 평점이 준비되면 채워 넣습니다.
+class _TrackRow extends ConsumerWidget {
+  const _TrackRow({required this.number, required this.track, required this.duration, required this.onTap});
+
+  final int number;
+  final SpotifyItem track;
+  final String? duration;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final summary = ref.watch(itemSummaryProvider(('track', track.id))).asData?.value;
+    final avg = summary?.averageRating;
+    final mine = summary?.myReview?.rating;
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(AppRadius.scoreButton),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Row(children: [
+          SizedBox(
+            width: 22,
+            child: Text('$number', style: AppText.grotesk(13, weight: FontWeight.w500, color: AppColors.primary)),
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(track.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppText.mixed(14, weight: FontWeight.w800, color: AppColors.textPrimary)),
+              if (duration != null) Text(duration!, style: AppText.grotesk(11, color: AppColors.textSecondary)),
+            ]),
+          ),
+          if (avg != null)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+              decoration: BoxDecoration(color: AppColors.chip, borderRadius: BorderRadius.circular(AppRadius.pill)),
+              child: Text('★ ${avg.toStringAsFixed(1)}',
+                  style: AppText.mixed(12, weight: FontWeight.w700, color: AppColors.primary)),
+            ),
+          if (mine != null) ...[
+            const SizedBox(width: 6),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+              decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(AppRadius.pill)),
+              child: Text('내 ${mine.toStringAsFixed(1)}',
+                  style: AppText.mixed(12, weight: FontWeight.w700, color: Colors.white)),
+            ),
+          ],
+        ]),
+      ),
+    );
   }
 }

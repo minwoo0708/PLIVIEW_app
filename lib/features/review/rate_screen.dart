@@ -235,8 +235,11 @@ class _RateScreenState extends ConsumerState<RateScreen> {
         _ratingCard(),
         const SizedBox(height: 14),
         _commentBox(),
-        const SizedBox(height: 14),
-        _tagSection(),
+        // 곡 평가는 별점과 한줄평만, 태그는 앨범에서만 받아요.
+        if (_item.kind != 'track') ...[
+          const SizedBox(height: 14),
+          _tagSection(),
+        ],
       ];
 
   Widget _ratingCard() {
