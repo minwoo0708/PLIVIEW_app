@@ -6,7 +6,11 @@ import '../../features/auth/login_screen.dart';
 import '../../features/auth/signup_screen.dart';
 import '../../features/auth/splash_screen.dart';
 import '../../features/auth/start_screen.dart';
+import '../../features/item/artist_screen.dart';
+import '../../features/item/item_detail_screen.dart';
 import '../../features/placeholder/tab_placeholder.dart';
+import '../../features/review/rate_args.dart';
+import '../../features/review/rate_screen.dart';
 import '../../features/search/search_screen.dart';
 import '../../shared/widgets/main_shell.dart';
 import '../auth/auth_controller.dart';
@@ -20,6 +24,7 @@ abstract final class Routes {
   static const search = '/search';
   static const history = '/history';
   static const me = '/me';
+  static const rate = '/rate';
 
   /// 상세 화면. kind는 track / album / artist / playlist.
   static String item(String kind, String id) => '/$kind/$id';
@@ -55,6 +60,27 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.start, builder: (_, _) => const StartScreen()),
       GoRoute(path: Routes.login, builder: (_, _) => const LoginScreen()),
       GoRoute(path: Routes.signup, builder: (_, _) => const SignupScreen()),
+      // 상세·평가 화면은 하단 내비 위로 덮어서 보여 줍니다.
+      GoRoute(
+        path: '/track/:id',
+        builder: (_, s) => ItemDetailScreen(kind: 'track', id: s.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/album/:id',
+        builder: (_, s) => ItemDetailScreen(kind: 'album', id: s.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/playlist/:id',
+        builder: (_, s) => ItemDetailScreen(kind: 'playlist', id: s.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/artist/:id',
+        builder: (_, s) => ArtistScreen(id: s.pathParameters['id']!, name: s.extra as String?),
+      ),
+      GoRoute(
+        path: Routes.rate,
+        builder: (_, s) => RateScreen(args: s.extra! as RateArgs),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, shell) => MainShell(navigationShell: shell),
         branches: [

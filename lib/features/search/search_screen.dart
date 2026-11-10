@@ -140,7 +140,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     }
   }
 
-  void _open(SpotifyItem item) => context.push(Routes.item(item.kind, item.id));
+  void _open(SpotifyItem item) {
+    // 아티스트는 이름을 같이 넘겨서 앨범 목록 화면 제목에 씁니다.
+    context.push(Routes.item(item.kind, item.id), extra: item.kind == 'artist' ? item.name : null);
+  }
 
   Future<void> _openLinkDialog() async {
     final id = await showDialog<String>(context: context, builder: (_) => const _PlaylistLinkDialog());
