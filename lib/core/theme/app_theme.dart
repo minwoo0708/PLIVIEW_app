@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -13,12 +14,10 @@ abstract final class AppTheme {
         surface: AppColors.surface,
       ),
       scaffoldBackgroundColor: AppColors.surface,
+      // 기본 글꼴은 Gothic A1. 나머지 글꼴은 AppText에서 직접 지정합니다.
+      fontFamily: GoogleFonts.gothicA1().fontFamily,
     );
     return base.copyWith(
-      textTheme: GoogleFonts.gothicA1TextTheme(base.textTheme).apply(
-        bodyColor: AppColors.textPrimary,
-        displayColor: AppColors.textPrimary,
-      ),
       textSelectionTheme: const TextSelectionThemeData(
         cursorColor: AppColors.lavender,
         selectionColor: Color(0x665B2EFF),
