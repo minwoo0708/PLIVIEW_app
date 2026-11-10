@@ -52,7 +52,10 @@ class HomeScreen extends ConsumerWidget {
               Text('오늘은 뭘\n들어볼까요?', style: AppText.jua(30, height: 38 / 30)),
               const SizedBox(height: 16),
               // 히어로 카드는 인기 앨범이 있을 때만 보여 줍니다.
-              if (weekly.asData?.value != null) ...[
+              if (weekly.hasValue && weekly.value == null) ...[
+                const _EmptyHeroCard(),
+                const SizedBox(height: 16),
+              ] else if (weekly.asData?.value != null) ...[
                 _HeroCard(item: weekly.asData!.value!),
                 const SizedBox(height: 16),
               ],
@@ -239,4 +242,41 @@ class _ErrorText extends StatelessWidget {
           TextButton(onPressed: onRetry, child: const Text('다시 시도')),
         ]),
       );
+}
+
+/// 이번 주 인기 앨범이 아직 없을 때 히어로 자리에 보여 주는 카드.
+class _EmptyHeroCard extends StatelessWidget {
+  const _EmptyHeroCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.go(Routes.search),
+      child: Container(
+        height: 190,
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          gradient: AppColors.heroGradient,
+          borderRadius: BorderRadius.circular(AppRadius.hero),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(color: AppColors.lavender, borderRadius: BorderRadius.circular(AppRadius.pill)),
+              child: Text('이주의 앨범', style: AppText.gothic(11, weight: FontWeight.w800, color: AppColors.ink)),
+            ),
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('첫 리뷰를 남겨 보세요', style: AppText.jua(22)),
+              const SizedBox(height: 2),
+              Text('리뷰가 쌓이면 이번 주 인기 앨범이 여기에 떠요',
+                  style: AppText.gothic(13, weight: FontWeight.w500, color: AppColors.white85)),
+            ]),
+          ],
+        ),
+      ),
+    );
+  }
 }
