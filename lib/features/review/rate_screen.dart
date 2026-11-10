@@ -13,6 +13,7 @@ import '../../shared/widgets/cover_image.dart';
 import '../item/item_providers.dart' show typeOfKind;
 import '../../shared/widgets/star_rating.dart';
 import 'rate_args.dart';
+import 'track_picker.dart';
 
 /// 플리 총점 = 세 점수 평균을 0.5 단위로 반올림.
 /// 예: 5·4·3 → 4.0 / 5·4·4 → 4.33 → 4.5 / 3·3·4 → 3.33 → 3.5
@@ -44,6 +45,13 @@ class _RateScreenState extends ConsumerState<RateScreen> {
   double _rating = 0;
   int _concept = 0, _flow = 0, _discovery = 0;
   final List<String> _tags = [];
+
+  // 앨범·플리 하이라이트 (모두 선택 항목)
+  TrackRef? _bestTrack;
+  TrackRef? _worstTrack;
+  TrackRef? _underratedTrack;
+  final _bestMoment = TextEditingController();
+  final _body = TextEditingController();
   bool _saving = false;
   String? _error;
 
@@ -55,6 +63,14 @@ class _RateScreenState extends ConsumerState<RateScreen> {
       _rating = e.rating;
       _comment.text = e.comment ?? '';
       _tags.addAll(e.tags);
+      final h = e.highlights;
+      if (h != null) {
+        _bestTrack = h.bestTrack;
+        _worstTrack = h.worstTrack;
+        _underratedTrack = h.underratedTrack;
+        _bestMoment.text = h.bestMoment ?? '';
+        _body.text = h.body ?? '';
+      }
       final s = e.playlistScores;
       if (s != null) {
         _concept = s.concept.round();
@@ -68,7 +84,24 @@ class _RateScreenState extends ConsumerState<RateScreen> {
   void dispose() {
     _comment.dispose();
     _tagInput.dispose();
+    _bestMoment.dispose();
+    _body.dispose();
     super.dispose();
+  }
+
+  /// 서버로 보낼 하이라이트 값. 곡 리뷰에는 보내면 400이라 앨범·플리에서만 만듭니다.
+  /// 수정할 때 최고의 순간·전체 평가는 빈 문자열을 보내면 삭제돼요(곡 선택은 교체만 가능).
+  Map<String, dynamic> _highlightPayload({required bool editing}) {
+    if (_item.kind == 'track') return const {};
+    final moment = _bestMoment.text.trim();
+    final body = _body.text.trim();
+    return {
+      if (_bestTrack != null) 'bestTrack': _bestTrack!.toJson(),
+      if (_worstTrack != null) 'worstTrack': _worstTrack!.toJson(),
+      if (_item.kind == 'album' && _underratedTrack != null) 'underratedTrack': _underratedTrack!.toJson(),
+      if (moment.isNotEmpty || editing) 'bestMoment': moment,
+      if (body.isNotEmpty || editing) 'body': body,
+    };
   }
 
   double get _total => _isPlaylist ? playlistTotal(_concept, _flow, _discovery) : _rating;
@@ -114,6 +147,7 @@ class _RateScreenState extends ConsumerState<RateScreen> {
           'rating': _total,
           'comment': comment, // 빈 문자열이면 한 줄 평 삭제
           'tags': _tags, // 전체 교체
+          ..._highlightPayload(editing: true),
           if (_isPlaylist) ...{
             'conceptScore': _concept,
             'flowScore': _flow,
@@ -129,6 +163,7 @@ class _RateScreenState extends ConsumerState<RateScreen> {
           'rating': _total,
           if (comment.isNotEmpty) 'comment': comment,
           if (_tags.isNotEmpty) 'tags': _tags,
+          ..._highlightPayload(editing: false),
           if (_isPlaylist) ...{
             'conceptScore': _concept,
             'flowScore': _flow,
@@ -239,6 +274,7 @@ class _RateScreenState extends ConsumerState<RateScreen> {
         if (_item.kind != 'track') ...[
           const SizedBox(height: 14),
           _tagSection(),
+          ..._highlightWidgets(),
         ],
       ];
 
@@ -402,7 +438,101 @@ class _RateScreenState extends ConsumerState<RateScreen> {
                 style: AppText.mixed(12, color: AppColors.textSecondary)),
           ),
         ]),
+        ..._highlightWidgets(),
       ];
+
+  // ── 하이라이트 (앨범·플리) ─────────────────────────────
+
+  List<Widget> _highlightWidgets() => [
+        const SizedBox(height: 22),
+        Text('하이라이트', style: AppText.gothic(16, weight: FontWeight.w800, color: AppColors.textPrimary)),
+        const SizedBox(height: 4),
+        Text('모두 선택 사항이에요. 남기고 싶은 것만 채워 주세요.',
+            style: AppText.gothic(12, color: AppColors.textSecondary)),
+        const SizedBox(height: 12),
+        _trackField('최고의 곡', _bestTrack, (t) => setState(() => _bestTrack = t)),
+        const SizedBox(height: 10),
+        _trackField('워스트 곡', _worstTrack, (t) => setState(() => _worstTrack = t)),
+        // 가장 과소평가된 곡은 앨범에서만 받아요.
+        if (_item.kind == 'album') ...[
+          const SizedBox(height: 10),
+          _trackField('가장 과소평가된 곡', _underratedTrack, (t) => setState(() => _underratedTrack = t)),
+        ],
+        const SizedBox(height: 10),
+        _textBox('최고의 순간', '예: 2:31 브릿지', _bestMoment, maxLength: 100, maxLines: 1),
+        const SizedBox(height: 10),
+        _textBox('전체 평가', '앨범·플리를 들은 느낌을 길게 적어 보세요', _body, maxLength: 2000, maxLines: 8, minLines: 4),
+      ];
+
+  Widget _trackField(String label, TrackRef? value, ValueChanged<TrackRef> onPicked) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () async {
+        final picked = await pickTrack(context, item: _item, title: label);
+        if (picked != null) onPicked(picked);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(AppRadius.cover),
+          border: Border.all(color: value == null ? AppColors.border : AppColors.primary),
+        ),
+        child: Row(children: [
+          Text(label, style: AppText.gothic(13, weight: FontWeight.w800, color: AppColors.textPrimary)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              value?.name ?? '곡 고르기',
+              textAlign: TextAlign.right,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: value == null
+                  ? AppText.gothic(13, color: AppColors.textSecondary)
+                  : AppText.mixed(13, weight: FontWeight.w700, color: AppColors.primary),
+            ),
+          ),
+        ]),
+      ),
+    );
+  }
+
+  Widget _textBox(String label, String hint, TextEditingController c,
+      {required int maxLength, required int maxLines, int minLines = 1}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppRadius.cover),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Text(label, style: AppText.gothic(11, weight: FontWeight.w600, color: AppColors.primary)),
+          const Spacer(),
+          Text('${c.text.characters.length}/$maxLength', style: AppText.grotesk(11, color: AppColors.textSecondary)),
+        ]),
+        const SizedBox(height: 6),
+        TextField(
+          controller: c,
+          maxLength: maxLength,
+          maxLines: maxLines,
+          minLines: minLines,
+          onChanged: (_) => setState(() {}),
+          style: AppText.gothic(14, weight: FontWeight.w500, color: AppColors.textPrimary, height: 22 / 14),
+          cursorColor: AppColors.primary,
+          decoration: InputDecoration(
+            isCollapsed: true,
+            border: InputBorder.none,
+            counterText: '',
+            hintText: hint,
+            hintStyle: AppText.gothic(14, color: AppColors.textSecondary, height: 22 / 14),
+          ),
+        ),
+      ]),
+    );
+  }
 
   Widget _step(String label, String hint, int value, ValueChanged<int> onChanged) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
