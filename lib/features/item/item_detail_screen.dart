@@ -82,25 +82,24 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: const [AppColors.ink, AppColors.inkMid, AppColors.surface, AppColors.surface],
-            stops: _isPlaylist ? const [0, 0.50, 0.68, 1] : const [0, 0.62, 0.80, 1],
-          ),
-        ),
+        color: AppColors.surface,
         child: SafeArea(
           bottom: false,
           child: itemAsync.when(
-            loading: () => Column(children: [
-              _topBar(),
-              const Expanded(child: Center(child: CircularProgressIndicator(color: AppColors.lavender))),
-            ]),
-            error: (e, _) => Column(children: [
-              _topBar(),
-              Expanded(child: _errorView(e)),
-            ]),
+            loading: () => ColoredBox(
+              color: AppColors.ink,
+              child: Column(children: [
+                _topBar(),
+                const Expanded(child: Center(child: CircularProgressIndicator(color: AppColors.lavender))),
+              ]),
+            ),
+            error: (e, _) => ColoredBox(
+              color: AppColors.ink,
+              child: Column(children: [
+                _topBar(),
+                Expanded(child: _errorView(e)),
+              ]),
+            ),
             data: (item) => Stack(children: [
               RefreshIndicator(
                 color: AppColors.primary,
@@ -109,20 +108,39 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
                   refreshItem(ref, _key);
                 },
                 child: ListView(
-                  padding: EdgeInsets.fromLTRB(20, 0, 20, bottomInset + (_isPlaylist ? 110 : 32)),
+                  padding: EdgeInsets.zero,
                   children: [
-                    _topBar(padding: EdgeInsets.zero),
-                    const SizedBox(height: 14),
-                    if (_isPlaylist) _playlistHead(item) else _albumHead(item),
-                    const SizedBox(height: 14),
-                    if (_isPlaylist) ..._playlistMetrics(summary) else ..._albumScore(summary),
-                    if (!_isPlaylist) ...[
-                      const SizedBox(height: 14),
-                      _albumActions(item, summary),
-                      if (widget.kind == 'album' && item.tracks.isNotEmpty) ..._trackList(item),
-                    ],
-                    const SizedBox(height: 22),
-                    _reviewsSection(item),
+                    // 위쪽 헤더만 진한 보라 그라데이션, 아래는 밝은 배경
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 36),
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [AppColors.ink, AppColors.inkMid, AppColors.surface],
+                          stops: [0, 0.82, 1],
+                        ),
+                      ),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        _topBar(padding: EdgeInsets.zero),
+                        const SizedBox(height: 14),
+                        if (_isPlaylist) _playlistHead(item) else _albumHead(item),
+                        const SizedBox(height: 14),
+                        if (_isPlaylist) ..._playlistMetrics(summary) else ..._albumScore(summary),
+                        if (!_isPlaylist) ...[
+                          const SizedBox(height: 14),
+                          _albumActions(item, summary),
+                        ],
+                      ]),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(20, 0, 20, bottomInset + (_isPlaylist ? 110 : 32)),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        if (widget.kind == 'album' && item.tracks.isNotEmpty) ..._trackList(item),
+                        const SizedBox(height: 22),
+                        _reviewsSection(item),
+                      ]),
+                    ),
                   ],
                 ),
               ),
