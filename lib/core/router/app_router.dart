@@ -7,6 +7,7 @@ import '../../features/auth/signup_screen.dart';
 import '../../features/auth/splash_screen.dart';
 import '../../features/auth/start_screen.dart';
 import '../../features/placeholder/tab_placeholder.dart';
+import '../../features/search/search_screen.dart';
 import '../../shared/widgets/main_shell.dart';
 import '../auth/auth_controller.dart';
 
@@ -19,6 +20,9 @@ abstract final class Routes {
   static const search = '/search';
   static const history = '/history';
   static const me = '/me';
+
+  /// 상세 화면. kind는 track / album / artist / playlist.
+  static String item(String kind, String id) => '/$kind/$id';
 }
 
 /// 로그인 상태가 바뀔 때 라우터가 redirect를 다시 계산하게 하는 다리.
@@ -58,7 +62,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             GoRoute(path: Routes.home, builder: (_, _) => const TabPlaceholder(title: '홈')),
           ]),
           StatefulShellBranch(routes: [
-            GoRoute(path: Routes.search, builder: (_, _) => const TabPlaceholder(title: '탐색')),
+            GoRoute(path: Routes.search, builder: (_, _) => const SearchScreen()),
           ]),
           StatefulShellBranch(routes: [
             GoRoute(path: Routes.history, builder: (_, _) => const TabPlaceholder(title: '기록')),
