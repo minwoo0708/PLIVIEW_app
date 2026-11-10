@@ -254,9 +254,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(color: AppColors.ink, borderRadius: BorderRadius.circular(AppRadius.totalBar)),
           child: Row(children: [
-            Text('플리 잘 만드는 사람들', style: AppText.gothic(14, weight: FontWeight.w700)),
+            Text('플리를 잘 만드는 사람들', style: AppText.gothic(14, weight: FontWeight.w700)),
             const Spacer(),
-            Text('큐레이터 랭킹', style: AppText.gothic(12, weight: FontWeight.w600, color: AppColors.lavender)),
+            Text('베스트 큐레이터', style: AppText.gothic(12, weight: FontWeight.w600, color: AppColors.lavender)),
             const SizedBox(width: 4),
             SvgPicture.asset('assets/images/icon_chevron.svg', width: 18, height: 18,
                 colorFilter: const ColorFilter.mode(AppColors.lavender, BlendMode.srcIn)),

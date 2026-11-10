@@ -11,7 +11,7 @@ import '../../shared/widgets/avatar.dart';
 import '../../shared/widgets/brand_chip.dart';
 import 'profile_providers.dart';
 
-/// 10 큐레이터 랭킹 (플리 주인별 평균 점수 순위)
+/// 10 베스트 큐레이터 (플리 주인별 평균 점수 순위)
 class RankingScreen extends ConsumerWidget {
   const RankingScreen({super.key});
 
