@@ -11,7 +11,7 @@ import '../../shared/widgets/avatar.dart';
 import '../../shared/widgets/brand_chip.dart';
 import 'profile_providers.dart';
 
-/// 10 큐레이터 랭킹 (플리 주인별 평균 점수 순위)
+/// 10 베스트 큐레이터 (플리 주인별 평균 점수 순위)
 class RankingScreen extends ConsumerWidget {
   const RankingScreen({super.key});
 
@@ -38,7 +38,7 @@ class RankingScreen extends ConsumerWidget {
                 child: RoundBackButton(onPressed: () => context.canPop() ? context.pop() : context.go(Routes.me)),
               ),
               const SizedBox(height: 14),
-              Text('플리 잘 만드는\n사람들', style: AppText.display(30, height: 38 / 30)),
+              Text('베스트\n큐레이터', style: AppText.display(30, height: 38 / 30)),
               const SizedBox(height: 14),
               ranking.when(
                 loading: () => const Padding(

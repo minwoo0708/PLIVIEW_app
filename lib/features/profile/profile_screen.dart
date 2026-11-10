@@ -11,6 +11,7 @@ import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
 import '../../shared/widgets/avatar.dart';
+import '../../shared/widgets/cover_image.dart';
 import 'profile_providers.dart';
 
 /// 05 나(프로필)
@@ -96,6 +97,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
+  /// 별점 막대를 누르면, 그 별점을 준 곡·앨범·플리를 종류별로 나눠서 보여 줘요.
+  void _openStar(int star) {
+    final me = ref.read(currentUserProvider);
+    if (me == null) return;
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.hero))),
+      builder: (_) => _StarSheet(userId: me.id, star: star),
+    );
+  }
+
   Widget _content(ProfileData d) {
     final stats = d.profile.stats;
     final reviews = d.reviews.content;
@@ -146,14 +160,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       );
 
   /// 별점 분포 막대. 가장 많은 구간을 100%로 보고 비율로 그립니다.
-  /// 서버는 0.5 단위 10칸이라 화면에는 정수 별(1~5)로 합쳐서 보여 줍니다(예: 4점 = 3.5 + 4.0).
+  /// 서버는 0.5 단위 10칸이라 화면에는 정수 별(1~5)로 합쳐서 보여 줍니다(예: 4점 = 4.0 + 4.5). 막대를 누르면 그 별점을 준 항목을 모아 보여 줘요.
   Widget _habitCard(UserStats s) {
-    final buckets = <int, int>{};
-    for (var star = 1; star <= 5; star++) {
-      final whole = s.ratingDistribution['$star.0'] ?? 0;
-      final half = s.ratingDistribution['${star - 1}.5'] ?? 0; // 4.0 별에는 3.5도 포함
-      buckets[star] = star == 1 ? whole + (s.ratingDistribution['0.5'] ?? 0) : whole + half;
-    }
+    final buckets = <int, int>{for (var star = 1; star <= 5; star++) star: 0};
+    s.ratingDistribution.forEach((key, count) {
+      final star = starBucket(double.parse(key));
+      buckets[star] = buckets[star]! + count;
+    });
     final max = buckets.values.fold<int>(0, (a, b) => a > b ? a : b);
     return Container(
       padding: const EdgeInsets.all(18),
@@ -166,7 +179,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         Text('내 별점 습관', style: AppText.gothic(15, weight: FontWeight.w800, color: AppColors.textPrimary)),
         const SizedBox(height: 10),
         for (var star = 5; star >= 1; star--)
-          Padding(
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => _openStar(star),
+            child: Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: Row(children: [
               SizedBox(
@@ -202,6 +218,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     style: AppText.grotesk(12, weight: FontWeight.w500, color: AppColors.textSecondary)),
               ),
             ]),
+            ),
           ),
       ]),
     );
@@ -254,13 +271,114 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(color: AppColors.ink, borderRadius: BorderRadius.circular(AppRadius.totalBar)),
           child: Row(children: [
-            Text('플리 잘 만드는 사람들', style: AppText.gothic(14, weight: FontWeight.w700)),
+            Text('플리를 잘 만드는 사람들', style: AppText.gothic(14, weight: FontWeight.w700)),
             const Spacer(),
-            Text('큐레이터 랭킹', style: AppText.gothic(12, weight: FontWeight.w600, color: AppColors.lavender)),
+            Text('베스트 큐레이터', style: AppText.gothic(12, weight: FontWeight.w600, color: AppColors.lavender)),
             const SizedBox(width: 4),
             SvgPicture.asset('assets/images/icon_chevron.svg', width: 18, height: 18,
                 colorFilter: const ColorFilter.mode(AppColors.lavender, BlendMode.srcIn)),
           ]),
         ),
       );
+}
+
+/// 같은 별점을 준 항목 모아보기 (곡 / 앨범 / 플리로 나눔).
+class _StarSheet extends ConsumerWidget {
+  const _StarSheet({required this.userId, required this.star});
+
+  final int userId;
+  final int star;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final all = ref.watch(allUserReviewsProvider(userId));
+    return DraggableScrollableSheet(
+      expand: false,
+      initialChildSize: 0.7,
+      minChildSize: 0.4,
+      maxChildSize: 0.95,
+      builder: (context, controller) => Column(children: [
+        const SizedBox(height: 10),
+        Container(width: 40, height: 4, decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(2))),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 6),
+          child: Row(children: [
+            Text('★ $star점을 준 항목', style: AppText.display(20, color: AppColors.textPrimary)),
+          ]),
+        ),
+        Expanded(
+          child: all.when(
+            loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+            error: (e, _) => Center(
+              child: Text(e is ApiException ? e.userMessage : '불러올 수 없어요.',
+                  style: AppText.gothic(14, color: AppColors.textSecondary)),
+            ),
+            data: (reviews) {
+              final matched = reviews.where((r) => starBucket(r.rating) == star).toList();
+              if (matched.isEmpty) {
+                return Center(child: Text('$star점을 준 항목이 아직 없어요', style: AppText.gothic(14, color: AppColors.textSecondary)));
+              }
+              return ListView(
+                controller: controller,
+                padding: EdgeInsets.fromLTRB(20, 8, 20, MediaQuery.paddingOf(context).bottom + 20),
+                children: [
+                  for (final type in [ItemType.track, ItemType.album, ItemType.playlist])
+                    ..._group(context, type, matched.where((r) => r.type == type).toList()),
+                ],
+              );
+            },
+          ),
+        ),
+      ]),
+    );
+  }
+
+  List<Widget> _group(BuildContext context, ItemType type, List<Review> list) {
+    if (list.isEmpty) return const [];
+    return [
+      Padding(
+        padding: const EdgeInsets.only(top: 12, bottom: 8),
+        child: Text('${type.label} ${list.length}',
+            style: AppText.gothic(14, weight: FontWeight.w800, color: AppColors.textPrimary)),
+      ),
+      for (final r in list)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              Navigator.pop(context);
+              context.push(Routes.item(r.type.path, r.spotifyId));
+            },
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(AppRadius.cover),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: Row(children: [
+                CoverImage(url: r.item.imageUrl, size: 48, radius: 12, seed: r.spotifyId),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(r.item.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppText.mixed(14, weight: FontWeight.w800, color: AppColors.textPrimary)),
+                    if (r.item.subtitle != null)
+                      Text(r.item.subtitle!,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppText.mixed(12, color: AppColors.textSecondary)),
+                  ]),
+                ),
+                Text(r.rating.toStringAsFixed(1),
+                    style: AppText.grotesk(14, weight: FontWeight.w700, color: AppColors.primary)),
+              ]),
+            ),
+          ),
+        ),
+    ];
+  }
 }

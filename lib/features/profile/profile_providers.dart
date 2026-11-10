@@ -33,3 +33,19 @@ final curatorRankingProvider = FutureProvider.autoDispose<List<CuratorRank>>((re
   final json = await api.get('/api/curators/ranking', query: {'minReviews': 1, 'limit': 30}) as List;
   return json.whereType<Map<String, dynamic>>().map(CuratorRank.fromJson).toList();
 });
+
+/// 한 유저의 리뷰 전체(별점 모아보기용). 서버가 한 번에 50개까지만 줘서 끝날 때까지 이어서 받아요.
+final allUserReviewsProvider = FutureProvider.autoDispose.family<List<Review>, int>((ref, userId) async {
+  final api = ref.watch(apiClientProvider);
+  final all = <Review>[];
+  for (var page = 0; page < 20; page++) {
+    final json = await api.get('/api/users/$userId/reviews', query: {'size': 50, 'page': page}) as Map<String, dynamic>;
+    final result = PageResult.fromJson(json['reviews'] as Map<String, dynamic>, Review.fromJson);
+    all.addAll(result.content);
+    if (!result.hasNext) break;
+  }
+  return all;
+});
+
+/// 별점 막대·모아보기가 쓰는 구간: 5점 = 5.0, 4점 = 4.0~4.5, … 1점 = 0.5~1.5.
+int starBucket(double rating) => rating.floor().clamp(1, 5);
