@@ -38,7 +38,7 @@ class RankingScreen extends ConsumerWidget {
                 child: RoundBackButton(onPressed: () => context.canPop() ? context.pop() : context.go(Routes.me)),
               ),
               const SizedBox(height: 14),
-              Text('플리 잘 만드는\n사람들', style: AppText.display(30, height: 38 / 30)),
+              Text('베스트\n큐레이터', style: AppText.display(30, height: 38 / 30)),
               const SizedBox(height: 14),
               ranking.when(
                 loading: () => const Padding(
