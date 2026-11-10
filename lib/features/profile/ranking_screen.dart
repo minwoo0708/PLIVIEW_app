@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/api/api_exception.dart';
+import '../../core/auth/auth_controller.dart';
 import '../../core/models/stats.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
@@ -40,6 +41,28 @@ class RankingScreen extends ConsumerWidget {
               const SizedBox(height: 14),
               Text('베스트\n큐레이터', style: AppText.display(30, height: 38 / 30)),
               const SizedBox(height: 14),
+              // 내가 아직 Spotify를 연동하지 않았다면 큐레이터가 되는 방법을 알려 줍니다.
+              if (ref.watch(currentUserProvider)?.spotify == null) ...[
+                GestureDetector(
+                  onTap: () => context.push(Routes.settings),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: AppColors.white14,
+                      borderRadius: BorderRadius.circular(AppRadius.scoreButton),
+                    ),
+                    child: Row(children: [
+                      Expanded(
+                        child: Text('Spotify를 연동하면 나도 베스트 큐레이터에 도전할 수 있어요',
+                            style: AppText.gothic(12, weight: FontWeight.w600, color: AppColors.white85)),
+                      ),
+                      const SizedBox(width: 8),
+                      Text('설정', style: AppText.gothic(12, weight: FontWeight.w800, color: AppColors.lavender)),
+                    ]),
+                  ),
+                ),
+                const SizedBox(height: 14),
+              ],
               ranking.when(
                 loading: () => const Padding(
                   padding: EdgeInsets.all(40),
