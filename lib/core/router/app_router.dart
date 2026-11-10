@@ -10,6 +10,7 @@ import '../../features/history/history_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/item/artist_screen.dart';
 import '../../features/item/item_detail_screen.dart';
+import '../../features/profile/curator_screen.dart';
 import '../../features/profile/profile_screen.dart';
 import '../../features/profile/ranking_screen.dart';
 import '../../features/profile/settings_screen.dart';
@@ -31,6 +32,7 @@ abstract final class Routes {
   static const rate = '/rate';
   static const settings = '/settings';
   static const ranking = '/ranking';
+  static String curator(int userId) => '/curator/$userId';
 
   /// 상세 화면. kind는 track / album / artist / playlist.
   static String item(String kind, String id) => '/$kind/$id';
@@ -89,6 +91,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(path: Routes.settings, builder: (_, _) => const SettingsScreen()),
       GoRoute(path: Routes.ranking, builder: (_, _) => const RankingScreen()),
+      GoRoute(
+        path: '/curator/:userId',
+        builder: (_, s) => CuratorScreen(userId: int.parse(s.pathParameters['userId']!)),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, shell) => MainShell(navigationShell: shell),
         branches: [
