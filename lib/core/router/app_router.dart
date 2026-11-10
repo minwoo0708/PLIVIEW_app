@@ -6,10 +6,13 @@ import '../../features/auth/login_screen.dart';
 import '../../features/auth/signup_screen.dart';
 import '../../features/auth/splash_screen.dart';
 import '../../features/auth/start_screen.dart';
+import '../../features/history/history_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/item/artist_screen.dart';
 import '../../features/item/item_detail_screen.dart';
-import '../../features/placeholder/tab_placeholder.dart';
+import '../../features/profile/profile_screen.dart';
+import '../../features/profile/ranking_screen.dart';
+import '../../features/profile/settings_screen.dart';
 import '../../features/review/rate_args.dart';
 import '../../features/review/rate_screen.dart';
 import '../../features/search/search_screen.dart';
@@ -26,6 +29,8 @@ abstract final class Routes {
   static const history = '/history';
   static const me = '/me';
   static const rate = '/rate';
+  static const settings = '/settings';
+  static const ranking = '/ranking';
 
   /// 상세 화면. kind는 track / album / artist / playlist.
   static String item(String kind, String id) => '/$kind/$id';
@@ -82,6 +87,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: Routes.rate,
         builder: (_, s) => RateScreen(args: s.extra! as RateArgs),
       ),
+      GoRoute(path: Routes.settings, builder: (_, _) => const SettingsScreen()),
+      GoRoute(path: Routes.ranking, builder: (_, _) => const RankingScreen()),
       StatefulShellRoute.indexedStack(
         builder: (context, state, shell) => MainShell(navigationShell: shell),
         branches: [
@@ -92,10 +99,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             GoRoute(path: Routes.search, builder: (_, _) => const SearchScreen()),
           ]),
           StatefulShellBranch(routes: [
-            GoRoute(path: Routes.history, builder: (_, _) => const TabPlaceholder(title: '기록')),
+            GoRoute(path: Routes.history, builder: (_, _) => const HistoryScreen()),
           ]),
           StatefulShellBranch(routes: [
-            GoRoute(path: Routes.me, builder: (_, _) => const TabPlaceholder(title: '나')),
+            GoRoute(path: Routes.me, builder: (_, _) => const ProfileScreen()),
           ]),
         ],
       ),
