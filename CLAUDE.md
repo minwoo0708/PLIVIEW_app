@@ -28,8 +28,11 @@ Spotify 곡·앨범·플레이리스트에 별점(0.5 단위)과 한 줄 평을 
 - `assets/images/`에 받아 둔 SVG(아직 커밋 안 됨): 시작 화면 커버 4개, spotify_logo, deco_ring, hero_ring, icon_back/eye/play/home/search/clock/user. 아이콘은 색이 고정돼 있으니 필요하면 `ColorFilter`로 색을 바꿔 쓰기.
 
 ## 진행 상황
-- 끝남: 프로젝트 생성, 패키지 추가(flutter_riverpod 3, go_router, dio, flutter_secure_storage, google_fonts, cached_network_image, flutter_svg, url_launcher), 플랫폼 설정
-- 다음: 테마·공통 위젯(기본 버튼, 입력칸, 하단 플로팅 내비)·API 클라이언트·토큰 저장·라우터 → 인증 → 탐색 → 상세·평가 → 홈·프로필·랭킹·설정
+- 끝남: 프로젝트·플랫폼 설정, 테마·공통 위젯·API 클라이언트·라우터, 인증(시작·로그인·가입), 탐색, 앨범·곡·플리 상세, 평가하기(작성·수정·삭제), 홈, 프로필, 랭킹, 설정, 재생 기록 안내 화면
+- 안드로이드 에뮬레이터에서 회원가입 → 검색 → 앨범 평가(작성·수정) → 플리 평가까지 실제 서버로 확인함
+- 남음: 프로필·랭킹·설정 화면 에뮬레이터 확인, iOS는 Mac에서만 빌드 가능, 2단계(Spotify PKCE 재생 기록)
+- 서버 제약: Spotify 검색·앨범 목록은 limit 최대 10(11 이상이면 404). 플리 상세 응답에는 수록곡 목록이 없음(수록곡 섹션 없음).
+- 에뮬레이터: AVD `Medium_Phone_API_37.0`, 실행 `flutter run -d emulator-5554`
 - 완료 기준: 에뮬레이터에서 회원가입·로그인 → 검색 → 앨범·플리 상세 → 리뷰 작성·수정이 실제 서버와 동작. 디자인 토큰 적용.
 
 ## git 규칙
