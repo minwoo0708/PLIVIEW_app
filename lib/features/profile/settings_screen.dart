@@ -8,6 +8,7 @@ import '../../core/api/api_exception.dart';
 import '../../core/auth/auth_controller.dart';
 import '../../core/models/user.dart';
 import '../../core/router/app_router.dart';
+import '../../core/spotify/spotify_auth.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
 import '../../shared/widgets/avatar.dart';
@@ -46,6 +47,21 @@ class SettingsScreen extends ConsumerWidget {
     }
   }
 
+  Future<void> _toggleSpotify(BuildContext context, WidgetRef ref, bool linked) async {
+    final link = ref.read(spotifyLinkProvider.notifier);
+    if (linked) {
+      final ok = await _confirm(context, 'Spotify 연동을 해제할까요?', '재생 기록 탭은 다시 연동하기 전까지 볼 수 없어요.', '해제');
+      if (ok == true) await link.disconnect();
+      return;
+    }
+    try {
+      final ok = await link.connect();
+      if (context.mounted && ok) _toast(context, 'Spotify를 연동했어요.');
+    } catch (_) {
+      if (context.mounted) _toast(context, 'Spotify 연동에 실패했어요. 다시 시도해 주세요.');
+    }
+  }
+
   Future<void> _logout(BuildContext context, WidgetRef ref) async {
     final ok = await _confirm(context, '로그아웃할까요?', '이 기기에서 로그아웃돼요.', '로그아웃');
     if (ok == true) await ref.read(authControllerProvider.notifier).logout();
@@ -77,6 +93,7 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final me = ref.watch(currentUserProvider);
+    final spotifyLinked = ref.watch(spotifyLinkProvider).value ?? false;
     if (me == null) return const SizedBox.shrink();
     return Scaffold(
       backgroundColor: AppColors.surface,
@@ -111,7 +128,11 @@ class SettingsScreen extends ConsumerWidget {
               _row('비밀번호 변경', '현재 비밀번호 확인 후 변경', () => _changePassword(context, ref)),
               const SizedBox(height: 18),
               _label('연동'),
-              _row('Spotify 연동', '준비 중이에요', () => _toast(context, 'Spotify 연동은 곧 만나요!')),
+              _row(
+                'Spotify 연동',
+                spotifyLinked ? '연동됨 (눌러서 해제하기)' : '내 재생 기록을 보려면 연동해 주세요',
+                () => _toggleSpotify(context, ref, spotifyLinked),
+              ),
               const SizedBox(height: 18),
               _label('기타'),
               _row('로그아웃', '이 기기에서 나가요', () => _logout(context, ref)),

@@ -27,6 +27,8 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        // Spotify 로그인 후 앱으로 돌아오는 주소(pliview://callback)의 스킴
+        manifestPlaceholders["appAuthRedirectScheme"] = "pliview"
     }
 
     buildTypes {
