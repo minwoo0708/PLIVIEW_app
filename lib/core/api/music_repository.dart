@@ -4,6 +4,7 @@ import '../models/page_result.dart';
 import '../models/review.dart';
 import '../models/spotify_item.dart';
 import '../models/stats.dart';
+import '../models/user.dart';
 import 'api_client.dart';
 
 /// 서버의 Spotify 대리 조회, 리뷰, 항목 요약 API를 모아 둔 곳.
@@ -105,13 +106,59 @@ class MusicRepository {
     return json.whereType<Map<String, dynamic>>().map(PopularItem.fromJson).toList();
   }
 
-  Future<List<CuratorRank>> curatorRanking({int minReviews = 3, int limit = 20}) async {
+
+  // ── v0.4: 곡 평점 일괄, 이번 주의 플리, 큐레이터 ───────────
+
+  /// 곡 여러 개의 평점을 한 번에 조회합니다(최대 100개). 리뷰 없는 곡도 포함돼요.
+  Future<Map<String, TrackRating>> trackRatings(List<String> spotifyIds) async {
+    if (spotifyIds.isEmpty) return {};
+    final result = <String, TrackRating>{};
+    for (var i = 0; i < spotifyIds.length; i += 100) {
+      final chunk = spotifyIds.sublist(i, i + 100 > spotifyIds.length ? spotifyIds.length : i + 100);
+      final json = await _api.get('/api/items/tracks/ratings', query: {'spotifyIds': chunk.join(',')}) as List;
+      for (final r in json.whereType<Map<String, dynamic>>().map(TrackRating.fromJson)) {
+        result[r.spotifyId] = r;
+      }
+    }
+    return result;
+  }
+
+  /// 이번 주의 플리: 리뷰가 [minReviews]개 이상인 플리를 평균 총점 높은 순으로. 비어 있을 수 있어요.
+  Future<List<PopularItem>> weeklyPlaylists({int minReviews = 50, int limit = 10, int days = 7}) async {
+    final json = await _api.get('/api/feed/weekly-playlists', query: {
+      'minReviews': minReviews,
+      'limit': limit,
+      'days': days,
+    }) as List;
+    return json.whereType<Map<String, dynamic>>().map(PopularItem.fromJson).toList();
+  }
+
+  /// 베스트 큐레이터 랭킹: Spotify를 연동한 사용자만 나와요.
+  Future<List<CuratorRank>> curatorRanking({int minReviews = 1, int limit = 30}) async {
     final json = await _api.get('/api/curators/ranking', query: {
       'minReviews': minReviews,
       'limit': limit,
     }) as List;
     return json.whereType<Map<String, dynamic>>().map(CuratorRank.fromJson).toList();
   }
+
+  Future<CuratorRank> curatorProfile(int userId) async =>
+      CuratorRank.fromJson(await _api.get('/api/curators/$userId') as Map<String, dynamic>);
+
+  /// 큐레이터의 플리 목록(인기순).
+  Future<PageResult<PopularItem>> curatorPlaylists(int userId, {int page = 0, int size = 20}) async {
+    final json = await _api.get('/api/curators/$userId/playlists', query: {'page': page, 'size': size});
+    return PageResult.fromJson(json as Map<String, dynamic>, PopularItem.fromJson);
+  }
+
+  // ── v0.4: Spotify 계정 연동 저장 ──────────────────────────
+
+  /// PKCE로 받은 사용자 토큰을 보내 연동합니다. 서버는 토큰을 저장하지 않고 계정 id만 저장해요.
+  Future<User> linkSpotify(String spotifyAccessToken) async => User.fromJson(
+      await _api.put('/api/users/me/spotify', body: {'spotifyAccessToken': spotifyAccessToken}) as Map<String, dynamic>);
+
+  Future<User> unlinkSpotify() async =>
+      User.fromJson(await _api.delete('/api/users/me/spotify') as Map<String, dynamic>);
 }
 
 final musicRepositoryProvider = Provider<MusicRepository>((ref) => MusicRepository(ref.watch(apiClientProvider)));

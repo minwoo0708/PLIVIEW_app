@@ -64,7 +64,7 @@ class PopularItem {
   final double? averageRating;
 
   factory PopularItem.fromJson(Map<String, dynamic> json) => PopularItem(
-        type: ItemType.fromJson(json['type'] as String),
+        type: json['type'] == null ? ItemType.playlist : ItemType.fromJson(json['type'] as String), // 이번 주의 플리 응답에는 type이 없어요
         spotifyId: json['spotifyId'] as String,
         item: ReviewItem.fromJson(json['item'] as Map<String, dynamic>),
         reviewCount: (json['reviewCount'] as num?)?.toInt() ?? 0,
@@ -106,42 +106,78 @@ class UserProfile {
   final UserStats stats;
 }
 
-/// `GET /api/curators/ranking` 항목.
-class CuratorRank {
-  const CuratorRank({
-    required this.rank,
-    required this.ownerSpotifyId,
-    required this.ownerName,
-    required this.playlistCount,
-    required this.reviewCount,
-    required this.averageRating,
-    this.concept,
-    this.flow,
-    this.discovery,
-  });
+/// 큐레이터 평균 점수(컨셉·흐름·발견성).
+class CuratorScores {
+  const CuratorScores({this.concept, this.flow, this.discovery});
 
-  final int rank;
-  final String ownerSpotifyId;
-  final String ownerName;
-  final int playlistCount;
-  final int reviewCount;
-  final double averageRating;
   final double? concept;
   final double? flow;
   final double? discovery;
 
-  factory CuratorRank.fromJson(Map<String, dynamic> json) {
-    final scores = json['averageScores'] as Map<String, dynamic>?;
-    return CuratorRank(
-      rank: (json['rank'] as num).toInt(),
-      ownerSpotifyId: json['ownerSpotifyId'] as String,
-      ownerName: json['ownerName'] as String? ?? json['ownerSpotifyId'] as String,
-      playlistCount: (json['playlistCount'] as num?)?.toInt() ?? 0,
-      reviewCount: (json['reviewCount'] as num?)?.toInt() ?? 0,
-      averageRating: (json['averageRating'] as num).toDouble(),
-      concept: _toDouble(scores?['concept']),
-      flow: _toDouble(scores?['flow']),
-      discovery: _toDouble(scores?['discovery']),
-    );
-  }
+  factory CuratorScores.fromJson(Map<String, dynamic>? json) => CuratorScores(
+        concept: _toDouble(json?['concept']),
+        flow: _toDouble(json?['flow']),
+        discovery: _toDouble(json?['discovery']),
+      );
+}
+
+/// 베스트 큐레이터 한 명 (`GET /api/curators/ranking` 항목, `GET /api/curators/{userId}` 응답).
+/// Spotify를 연동한 PLIVIEW 사용자만 큐레이터가 됩니다.
+class CuratorRank {
+  const CuratorRank({
+    required this.userId,
+    required this.nickname,
+    required this.spotifyUserId,
+    required this.playlistCount,
+    required this.reviewCount,
+    required this.scores,
+    this.rank,
+    this.profileImageUrl,
+    this.spotifyDisplayName,
+    this.averageRating,
+  });
+
+  /// 프로필 응답에는 순위가 없어서 null일 수 있어요.
+  final int? rank;
+  final int userId;
+  final String nickname;
+  final String? profileImageUrl;
+  final String spotifyUserId;
+  final String? spotifyDisplayName;
+  final int playlistCount;
+  final int reviewCount;
+
+  /// 받은 리뷰가 없으면 null.
+  final double? averageRating;
+  final CuratorScores scores;
+
+  factory CuratorRank.fromJson(Map<String, dynamic> json) => CuratorRank(
+        rank: (json['rank'] as num?)?.toInt(),
+        userId: (json['userId'] as num).toInt(),
+        nickname: json['nickname'] as String? ?? '',
+        profileImageUrl: json['profileImageUrl'] as String?,
+        spotifyUserId: json['spotifyUserId'] as String? ?? '',
+        spotifyDisplayName: json['spotifyDisplayName'] as String?,
+        playlistCount: (json['playlistCount'] as num?)?.toInt() ?? 0,
+        reviewCount: (json['reviewCount'] as num?)?.toInt() ?? 0,
+        averageRating: _toDouble(json['averageRating']),
+        scores: CuratorScores.fromJson(json['averageScores'] as Map<String, dynamic>?),
+      );
+}
+
+/// `GET /api/items/tracks/ratings` 항목: 곡 하나의 평점.
+class TrackRating {
+  const TrackRating({required this.spotifyId, required this.reviewCount, this.averageRating, this.myRating});
+
+  final String spotifyId;
+  final int reviewCount;
+  final double? averageRating;
+  final double? myRating;
+
+  factory TrackRating.fromJson(Map<String, dynamic> json) => TrackRating(
+        spotifyId: json['spotifyId'] as String,
+        reviewCount: (json['reviewCount'] as num?)?.toInt() ?? 0,
+        averageRating: _toDouble(json['averageRating']),
+        myRating: _toDouble(json['myRating']),
+      );
 }

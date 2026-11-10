@@ -88,6 +88,7 @@ class Review {
     required this.createdAt,
     this.comment,
     this.playlistScores,
+    this.highlights,
   });
 
   final int id;
@@ -98,6 +99,9 @@ class Review {
   final String? comment;
   final List<String> tags;
   final PlaylistScores? playlistScores;
+
+  /// 앨범·플리 리뷰의 하이라이트(최고/워스트/과소평가 곡, 최고의 순간, 전체 평가). 곡 리뷰면 null.
+  final ReviewHighlights? highlights;
   final ReviewAuthor author;
   final bool isMine;
   final DateTime createdAt;
@@ -113,8 +117,49 @@ class Review {
         playlistScores: json['playlistScores'] == null
             ? null
             : PlaylistScores.fromJson(json['playlistScores'] as Map<String, dynamic>),
+        highlights: json['highlights'] == null
+            ? null
+            : ReviewHighlights.fromJson(json['highlights'] as Map<String, dynamic>),
         author: ReviewAuthor.fromJson(json['author'] as Map<String, dynamic>),
         isMine: json['isMine'] as bool? ?? false,
         createdAt: DateTime.tryParse(json['createdAt'] as String? ?? '') ?? DateTime.now(),
       );
+}
+
+/// 하이라이트에서 고른 곡 `{spotifyId, name}`.
+class TrackRef {
+  const TrackRef({required this.spotifyId, required this.name});
+
+  final String spotifyId;
+  final String name;
+
+  factory TrackRef.fromJson(Map<String, dynamic> json) =>
+      TrackRef(spotifyId: json['spotifyId'] as String, name: json['name'] as String? ?? '');
+
+  Map<String, dynamic> toJson() => {'spotifyId': spotifyId, 'name': name};
+}
+
+/// 앨범·플리 리뷰의 하이라이트. 값은 각각 없으면 null.
+class ReviewHighlights {
+  const ReviewHighlights({this.bestTrack, this.worstTrack, this.underratedTrack, this.bestMoment, this.body});
+
+  final TrackRef? bestTrack;
+  final TrackRef? worstTrack;
+  final TrackRef? underratedTrack;
+  final String? bestMoment;
+  final String? body;
+
+  bool get isEmpty =>
+      bestTrack == null && worstTrack == null && underratedTrack == null && bestMoment == null && body == null;
+
+  factory ReviewHighlights.fromJson(Map<String, dynamic> json) {
+    TrackRef? track(String key) => json[key] == null ? null : TrackRef.fromJson(json[key] as Map<String, dynamic>);
+    return ReviewHighlights(
+      bestTrack: track('bestTrack'),
+      worstTrack: track('worstTrack'),
+      underratedTrack: track('underratedTrack'),
+      bestMoment: json['bestMoment'] as String?,
+      body: json['body'] as String?,
+    );
+  }
 }
