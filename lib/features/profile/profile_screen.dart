@@ -33,14 +33,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final bottom = MediaQuery.paddingOf(context).bottom + 110;
 
     return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [AppColors.ink, AppColors.inkMid, AppColors.surface, AppColors.surface],
-          stops: [0, 0.40, 0.58, 1],
-        ),
-      ),
+      color: AppColors.surface,
       child: SafeArea(
         bottom: false,
         child: Stack(children: [
@@ -51,8 +44,29 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               await ref.read(profileProvider(me.id).future);
             },
             child: ListView(
-              padding: EdgeInsets.fromLTRB(20, 8, 20, bottom),
+              padding: EdgeInsets.zero,
               children: [
+                // 위쪽 보라 배경은 내용과 함께 스크롤돼서, 위로 올려도 글자가 묻히지 않아요.
+                Stack(children: [
+                  const Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: 640,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [AppColors.ink, AppColors.inkMid, AppColors.surface],
+                          stops: [0, 0.6, 1],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(20, 8, 20, bottom),
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                 Center(child: Avatar(nickname: me.nickname, imageUrl: me.profileImageUrl, size: 88, border: true)),
                 const SizedBox(height: 14),
                 Center(child: Text(me.nickname, style: AppText.display(24))),
@@ -75,6 +89,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ),
                   data: (d) => _content(d),
                 ),
+                    ]),
+                  ),
+                ]),
               ],
             ),
           ),
@@ -237,13 +254,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               border: Border.all(color: AppColors.border),
             ),
             child: Row(children: [
-              Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(AppRadius.scoreButton)),
-                alignment: Alignment.center,
-                child: Text(r.rating.toStringAsFixed(1), style: AppText.grotesk(18, weight: FontWeight.w700)),
+              // 평점은 맨 왼쪽, 그 옆에 앨범·플리·곡 표지
+              SizedBox(
+                width: 36,
+                child: Text(r.rating.toStringAsFixed(1),
+                    style: AppText.grotesk(16, weight: FontWeight.w700, color: AppColors.primary)),
               ),
+              CoverImage(url: r.item.imageUrl, size: 52, radius: AppRadius.scoreButton, seed: r.spotifyId),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
