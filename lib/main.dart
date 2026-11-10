@@ -9,7 +9,10 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.light,
+    statusBarBrightness: Brightness.dark,
     systemNavigationBarColor: Colors.transparent,
+    systemNavigationBarContrastEnforced: false,
   ));
   runApp(const ProviderScope(child: PliviewApp()));
 }
