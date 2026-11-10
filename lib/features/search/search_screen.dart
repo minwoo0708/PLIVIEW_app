@@ -30,7 +30,8 @@ const _kinds = [
 ];
 
 class _SearchScreenState extends ConsumerState<SearchScreen> {
-  static const _pageSize = 20;
+  /// Spotify 검색은 한 번에 최대 10개까지만 받을 수 있어요(11개 이상이면 404).
+  static const _pageSize = 10;
 
   final _controller = TextEditingController();
   final _scroll = ScrollController();

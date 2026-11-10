@@ -14,7 +14,7 @@ class MusicRepository {
 
   // ── Spotify 조회 ──────────────────────────────────────────
 
-  Future<SearchPage> search(String q, String kind, {int limit = 20, int offset = 0}) async {
+  Future<SearchPage> search(String q, String kind, {int limit = 10, int offset = 0}) async {
     final json = await _api.get('/api/spotify/search', query: {
       'q': q,
       'type': kind,
@@ -33,7 +33,7 @@ class MusicRepository {
   Future<SpotifyItem> playlist(String id) async =>
       SpotifyItem.fromJson(await _api.get('/api/spotify/playlists/$id') as Map<String, dynamic>, 'playlist');
 
-  Future<List<SpotifyItem>> artistAlbums(String id, {int limit = 30}) async {
+  Future<List<SpotifyItem>> artistAlbums(String id, {int limit = 10}) async {
     final json = await _api.get('/api/spotify/artists/$id/albums', query: {'limit': limit}) as Map<String, dynamic>;
     return (json['items'] as List? ?? const [])
         .whereType<Map<String, dynamic>>()
