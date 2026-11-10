@@ -54,7 +54,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               children: [
                 Center(child: Avatar(nickname: me.nickname, imageUrl: me.profileImageUrl, size: 88, border: true)),
                 const SizedBox(height: 14),
-                Center(child: Text(me.nickname, style: AppText.jua(24))),
+                Center(child: Text(me.nickname, style: AppText.display(24))),
                 const SizedBox(height: 6),
                 if (me.email != null)
                   Center(child: Text(me.email!, style: AppText.grotesk(12, color: AppColors.white70))),

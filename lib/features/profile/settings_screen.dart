@@ -108,7 +108,7 @@ class SettingsScreen extends ConsumerWidget {
               Row(children: [
                 RoundBackButton(onPressed: () => context.canPop() ? context.pop() : context.go(Routes.me)),
                 const SizedBox(width: 14),
-                Text('설정', style: AppText.jua(28)),
+                Text('설정', style: AppText.display(28)),
               ]),
               Padding(
                 padding: const EdgeInsets.only(top: 20, bottom: 24),

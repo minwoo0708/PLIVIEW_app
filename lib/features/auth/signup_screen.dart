@@ -91,7 +91,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           children: [
             RoundBackButton(onPressed: () => context.canPop() ? context.pop() : context.go(Routes.start)),
             const SizedBox(height: 18),
-            Text('회원가입', style: AppText.jua(30)),
+            Text('회원가입', style: AppText.display(30)),
             const SizedBox(height: 8),
             Text('이메일로 가입하고 바로 리뷰를 남겨요', style: AppText.gothic(14, color: AppColors.white75)),
             const SizedBox(height: 22),

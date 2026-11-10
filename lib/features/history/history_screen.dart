@@ -35,7 +35,7 @@ class HistoryScreen extends ConsumerWidget {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('방금 들은 곡', style: AppText.jua(28)),
+            Text('방금 들은 곡', style: AppText.display(28)),
             const SizedBox(height: 4),
             Text('별을 눌러서 바로 평가하세요', style: AppText.gothic(13, color: AppColors.white70)),
             const SizedBox(height: 14),

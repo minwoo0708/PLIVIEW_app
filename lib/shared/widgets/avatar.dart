@@ -42,5 +42,5 @@ class Avatar extends StatelessWidget {
     );
   }
 
-  Widget _initial(String c) => Text(c, style: AppText.jua(size * 0.4));
+  Widget _initial(String c) => Text(c, style: AppText.display(size * 0.4));
 }

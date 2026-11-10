@@ -185,7 +185,7 @@ class _RateScreenState extends ConsumerState<RateScreen> {
                   ),
                 ),
                 const SizedBox(height: 14),
-                Text(_title, style: AppText.jua(30, height: 38 / 30)),
+                Text(_title, style: AppText.display(30, height: 38 / 30)),
                 const SizedBox(height: 14),
                 _target(),
                 const SizedBox(height: 14),
@@ -245,7 +245,7 @@ class _RateScreenState extends ConsumerState<RateScreen> {
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(color: AppColors.ink, borderRadius: BorderRadius.circular(26)),
       child: Column(children: [
-        Text(_rating.toStringAsFixed(1), style: AppText.jua(56)),
+        Text(_rating.toStringAsFixed(1), style: AppText.display(56)),
         const SizedBox(height: 8),
         // 별 위를 누르거나 드래그해서 0.5 단위로 고릅니다.
         LayoutBuilder(builder: (context, c) {
@@ -387,7 +387,7 @@ class _RateScreenState extends ConsumerState<RateScreen> {
             const Spacer(),
             StarRating(value: _total, size: 16),
             const SizedBox(width: 10),
-            Text(_total.toStringAsFixed(1), style: AppText.jua(22)),
+            Text(_total.toStringAsFixed(1), style: AppText.display(22)),
           ]),
         ),
         const SizedBox(height: 14),
