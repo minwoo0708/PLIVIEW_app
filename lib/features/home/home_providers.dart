@@ -21,17 +21,8 @@ final feedProvider = FutureProvider.autoDispose<List<Review>>((ref) async {
   return page.content;
 });
 
-/// "이번 주의 플리" 기준: 최근 7일 리뷰가 이만큼 이상 쌓인 플리만 후보가 돼요.
-const weeklyPlaylistMinReviews = 50;
-
-/// 이번 주의 플리: 최근 7일 리뷰가 [weeklyPlaylistMinReviews]개 이상인 플리를 평점 높은 순으로 보여 줘요.
-/// (서버가 인기순으로만 주기 때문에 앱에서 거르고 다시 정렬합니다.)
-final weeklyPlaylistsProvider = FutureProvider.autoDispose<List<PopularItem>>((ref) async {
-  final list = await ref.watch(musicRepositoryProvider).popular(type: ItemType.playlist, days: 7, limit: 50);
-  final qualified = list.where((p) => p.reviewCount >= weeklyPlaylistMinReviews && p.averageRating != null).toList();
-  qualified.sort((a, b) {
-    final byRating = b.averageRating!.compareTo(a.averageRating!);
-    return byRating != 0 ? byRating : b.reviewCount.compareTo(a.reviewCount);
-  });
-  return qualified;
+/// 이번 주의 플리: 서버가 리뷰 50개 이상인 플리를 평균 총점 높은 순으로 줘요(최근 7일 기준).
+/// 서비스 초반엔 비어 있을 수 있어서 화면에서는 비면 숨겨요.
+final weeklyPlaylistsProvider = FutureProvider.autoDispose<List<PopularItem>>((ref) {
+  return ref.watch(musicRepositoryProvider).weeklyPlaylists(minReviews: 50, limit: 10, days: 7);
 });

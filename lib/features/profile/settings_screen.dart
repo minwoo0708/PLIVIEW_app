@@ -57,8 +57,8 @@ class SettingsScreen extends ConsumerWidget {
     try {
       final ok = await link.connect();
       if (context.mounted && ok) _toast(context, 'Spotify를 연동했어요.');
-    } catch (_) {
-      if (context.mounted) _toast(context, 'Spotify 연동에 실패했어요. 다시 시도해 주세요.');
+    } catch (e) {
+      if (context.mounted) _toast(context, e is ApiException ? e.userMessage : 'Spotify 연동에 실패했어요. 다시 시도해 주세요.');
     }
   }
 
@@ -93,7 +93,8 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final me = ref.watch(currentUserProvider);
-    final spotifyLinked = ref.watch(spotifyLinkProvider).value ?? false;
+    // 연동 여부는 서버가 알려 주는 값(me.spotify)을 기준으로 합니다.
+    final spotifyLinked = ref.watch(currentUserProvider)?.spotify != null;
     if (me == null) return const SizedBox.shrink();
     return Scaffold(
       backgroundColor: AppColors.surface,
@@ -130,7 +131,9 @@ class SettingsScreen extends ConsumerWidget {
               _label('연동'),
               _row(
                 'Spotify 연동',
-                spotifyLinked ? '연동됨 (눌러서 해제하기)' : '내 재생 기록을 보려면 연동해 주세요',
+                spotifyLinked
+                    ? '${me.spotify?.displayName ?? me.spotify?.userId ?? ''} 연동됨 (눌러서 해제하기)'
+                    : '연동하면 재생 기록과 베스트 큐레이터를 쓸 수 있어요',
                 () => _toggleSpotify(context, ref, spotifyLinked),
               ),
               const SizedBox(height: 18),

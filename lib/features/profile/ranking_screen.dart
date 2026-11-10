@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/api/api_exception.dart';
+import '../../core/auth/auth_controller.dart';
 import '../../core/models/stats.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
@@ -40,6 +41,28 @@ class RankingScreen extends ConsumerWidget {
               const SizedBox(height: 14),
               Text('베스트\n큐레이터', style: AppText.display(30, height: 38 / 30)),
               const SizedBox(height: 14),
+              // 내가 아직 Spotify를 연동하지 않았다면 큐레이터가 되는 방법을 알려 줍니다.
+              if (ref.watch(currentUserProvider)?.spotify == null) ...[
+                GestureDetector(
+                  onTap: () => context.push(Routes.settings),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: AppColors.white14,
+                      borderRadius: BorderRadius.circular(AppRadius.scoreButton),
+                    ),
+                    child: Row(children: [
+                      Expanded(
+                        child: Text('Spotify를 연동하면 나도 베스트 큐레이터에 도전할 수 있어요',
+                            style: AppText.gothic(12, weight: FontWeight.w600, color: AppColors.white85)),
+                      ),
+                      const SizedBox(width: 8),
+                      Text('설정', style: AppText.gothic(12, weight: FontWeight.w800, color: AppColors.lavender)),
+                    ]),
+                  ),
+                ),
+                const SizedBox(height: 14),
+              ],
               ranking.when(
                 loading: () => const Padding(
                   padding: EdgeInsets.all(40),
@@ -57,7 +80,7 @@ class RankingScreen extends ConsumerWidget {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 40),
                       child: Center(
-                        child: Text('아직 순위가 없어요.\n플리를 평가하면 만든 사람이 순위에 올라요.',
+                        child: Text('아직 순위가 없어요.\nSpotify를 연동한 사람이 만든 플리에\n리뷰가 쌓이면 순위에 올라요.',
                             textAlign: TextAlign.center,
                             style: AppText.gothic(14, color: AppColors.white85, height: 1.5)),
                       ),
@@ -65,9 +88,16 @@ class RankingScreen extends ConsumerWidget {
                   }
                   final top = list.first;
                   return Column(children: [
-                    _TopCard(rank: top),
+                    GestureDetector(
+                      onTap: () => context.push(Routes.curator(top.userId)),
+                      child: _TopCard(rank: top),
+                    ),
                     const SizedBox(height: 14),
-                    for (final r in list.skip(1)) _RankRow(rank: r),
+                    for (final r in list.skip(1))
+                      GestureDetector(
+                        onTap: () => context.push(Routes.curator(r.userId)),
+                        child: _RankRow(rank: r),
+                      ),
                   ]);
                 },
               ),
@@ -98,7 +128,7 @@ class _TopCard extends StatelessWidget {
         ),
       ),
       child: Row(children: [
-        Avatar(nickname: rank.ownerName, size: 68, border: true),
+        Avatar(nickname: rank.nickname, imageUrl: rank.profileImageUrl, size: 68, border: true),
         const SizedBox(width: 14),
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -106,7 +136,7 @@ class _TopCard extends StatelessWidget {
               TextSpan(text: '${rank.rank}', style: AppText.grotesk(12, weight: FontWeight.w700, color: AppColors.ink)),
               TextSpan(text: '위', style: AppText.gothic(12, weight: FontWeight.w800, color: AppColors.ink)),
             ])),
-            Text('@${rank.ownerName}',
+            Text(rank.nickname,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: AppText.grotesk(20, weight: FontWeight.w700, color: AppColors.ink)),
@@ -118,7 +148,7 @@ class _TopCard extends StatelessWidget {
             ])),
           ]),
         ),
-        Text('★ ${rank.averageRating.toStringAsFixed(1)}', style: AppText.mixed(20, weight: FontWeight.w800, color: AppColors.ink)),
+        Text('★ ${(rank.averageRating ?? 0).toStringAsFixed(1)}', style: AppText.mixed(20, weight: FontWeight.w800, color: AppColors.ink)),
       ]),
     );
   }
@@ -143,11 +173,11 @@ class _RankRow extends StatelessWidget {
         child: Row(children: [
           SizedBox(width: 24, child: Text('${rank.rank}', style: AppText.display(22, color: AppColors.primary))),
           const SizedBox(width: 12),
-          Avatar(nickname: rank.ownerName, size: 36),
+          Avatar(nickname: rank.nickname, imageUrl: rank.profileImageUrl, size: 36),
           const SizedBox(width: 12),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('@${rank.ownerName}',
+              Text(rank.nickname,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppText.grotesk(14, weight: FontWeight.w700, color: AppColors.textPrimary)),
@@ -161,7 +191,7 @@ class _RankRow extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(color: const Color(0x29672BF4), borderRadius: BorderRadius.circular(AppRadius.pill)),
-            child: Text('★ ${rank.averageRating.toStringAsFixed(1)}',
+            child: Text('★ ${(rank.averageRating ?? 0).toStringAsFixed(1)}',
                 style: AppText.mixed(13, weight: FontWeight.w800, color: const Color(0xFF3B09B0))),
           ),
         ]),

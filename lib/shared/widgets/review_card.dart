@@ -91,6 +91,7 @@ class ReviewCard extends StatelessWidget {
               const SizedBox(height: 10),
               Text(r.comment!, style: AppText.gothic(14, color: AppColors.textPrimary, height: 1.45)),
             ],
+            if (r.highlights != null && !r.highlights!.isEmpty) ..._highlights(r.highlights!),
             if (r.playlistScores != null) ...[
               const SizedBox(height: 10),
               Wrap(spacing: 6, runSpacing: 6, children: [
@@ -133,6 +134,35 @@ class ReviewCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// 앨범·플리 리뷰의 하이라이트: 곡 선택, 최고의 순간, 전체 평가.
+  List<Widget> _highlights(ReviewHighlights h) {
+    Widget line(String label, String value) => Padding(
+          padding: const EdgeInsets.only(bottom: 4),
+          child: Text.rich(TextSpan(children: [
+            TextSpan(text: '$label  ', style: AppText.gothic(12, weight: FontWeight.w700, color: AppColors.primary)),
+            TextSpan(text: value, style: AppText.mixed(13, weight: FontWeight.w600, color: AppColors.textPrimary)),
+          ])),
+        );
+    return [
+      const SizedBox(height: 10),
+      Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(color: AppColors.chip, borderRadius: BorderRadius.circular(AppRadius.scoreButton)),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          if (h.bestTrack != null) line('최고의 곡', h.bestTrack!.name),
+          if (h.worstTrack != null) line('워스트 곡', h.worstTrack!.name),
+          if (h.underratedTrack != null) line('과소평가', h.underratedTrack!.name),
+          if (h.bestMoment != null) line('최고의 순간', h.bestMoment!),
+          if (h.body != null) ...[
+            const SizedBox(height: 4),
+            Text(h.body!, style: AppText.gothic(13, color: AppColors.textPrimary, height: 1.5)),
+          ],
+        ]),
+      ),
+    ];
   }
 
   Widget _action(String label, VoidCallback onTap, Color color) => GestureDetector(

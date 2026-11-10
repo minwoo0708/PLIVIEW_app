@@ -2,6 +2,10 @@ import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import '../api/api_exception.dart';
+import '../api/music_repository.dart';
+import '../auth/auth_controller.dart';
+
 /// Spotify 사용자 연동(PKCE).
 /// 최근 재생 기록처럼 "내 Spotify 계정"이 필요한 기능에만 씁니다.
 /// 음악 정보 조회(검색·상세)는 서버가 대신 하므로 연동 없이도 쓸 수 있어요.
@@ -101,19 +105,33 @@ class SpotifyLinkNotifier extends Notifier<AsyncValue<bool>> {
     state = AsyncValue.data(await _auth.isConnected());
   }
 
-  /// 연동을 시도하고 결과(성공 여부)를 돌려줍니다.
+  /// Spotify에 로그인해서 연동하고, 서버에도 연동 사실을 저장합니다(베스트 큐레이터 자격).
+  /// 사용자가 로그인 화면을 닫으면 false. 서버가 거절하면 ApiException을 던지고 앱 쪽 연동도 풀어요.
   Future<bool> connect() async {
+    final ok = await _auth.connect();
+    if (!ok) return false;
+    final token = await _auth.accessToken();
+    if (token == null) return false;
     try {
-      final ok = await _auth.connect();
-      state = AsyncValue.data(ok || await _auth.isConnected());
-      return ok;
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
+      final user = await ref.read(musicRepositoryProvider).linkSpotify(token);
+      ref.read(authControllerProvider.notifier).updateUser(user);
+      state = const AsyncValue.data(true);
+      return true;
+    } on ApiException {
+      await _auth.disconnect();
+      state = const AsyncValue.data(false);
       rethrow;
     }
   }
 
+  /// 서버와 앱 양쪽의 연동을 해제합니다. 연동을 풀면 베스트 큐레이터 랭킹에서 빠져요.
   Future<void> disconnect() async {
+    try {
+      final user = await ref.read(musicRepositoryProvider).unlinkSpotify();
+      ref.read(authControllerProvider.notifier).updateUser(user);
+    } on ApiException {
+      // 서버가 안 되더라도 이 기기의 토큰은 지웁니다.
+    }
     await _auth.disconnect();
     state = const AsyncValue.data(false);
   }

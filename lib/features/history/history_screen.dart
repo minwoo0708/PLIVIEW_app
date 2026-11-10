@@ -62,9 +62,10 @@ class _ConnectGuideState extends ConsumerState<_ConnectGuide> {
     setState(() => _busy = true);
     try {
       await ref.read(spotifyLinkProvider.notifier).connect();
-    } catch (_) {
+    } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Spotify 연동에 실패했어요. 다시 시도해 주세요.')));
+        final msg = e is ApiException ? e.userMessage : 'Spotify 연동에 실패했어요. 다시 시도해 주세요.';
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
       }
     } finally {
       if (mounted) setState(() => _busy = false);
