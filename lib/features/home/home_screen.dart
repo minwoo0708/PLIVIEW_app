@@ -21,6 +21,7 @@ class HomeScreen extends ConsumerWidget {
     ref.invalidate(weeklyAlbumProvider);
     ref.invalidate(popularAlbumsProvider);
     ref.invalidate(feedProvider);
+    ref.invalidate(weeklyPlaylistsProvider);
     await Future.wait([
       ref.read(weeklyAlbumProvider.future),
       ref.read(popularAlbumsProvider.future),
@@ -34,6 +35,7 @@ class HomeScreen extends ConsumerWidget {
     final weekly = ref.watch(weeklyAlbumProvider);
     final popular = ref.watch(popularAlbumsProvider);
     final feed = ref.watch(feedProvider);
+    final weeklyPlaylists = ref.watch(weeklyPlaylistsProvider).asData?.value ?? const [];
     final bottom = MediaQuery.paddingOf(context).bottom + 110;
 
     return Container(
@@ -68,6 +70,13 @@ class HomeScreen extends ConsumerWidget {
                     ? const _Empty('아직 리뷰가 없어요.\n탐색에서 앨범을 찾아 첫 리뷰를 남겨 보세요!')
                     : _AlbumGrid(items: list),
               ),
+              // 이번 주의 플리는 기준(리뷰 50개 이상)을 넘은 게 있을 때만 보여 줍니다.
+              if (weeklyPlaylists.isNotEmpty) ...[
+                const SizedBox(height: 22),
+                _section('이번 주의 플리'),
+                const SizedBox(height: 14),
+                _PlaylistGrid(items: weeklyPlaylists),
+              ],
               const SizedBox(height: 22),
               _section('최신 리뷰'),
               const SizedBox(height: 14),
@@ -278,5 +287,41 @@ class _EmptyHeroCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// 이번 주의 플리 목록: 순위 번호와 평점을 붙인 2열 그리드.
+class _PlaylistGrid extends StatelessWidget {
+  const _PlaylistGrid({required this.items});
+
+  final List<PopularItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    final rows = (items.length + 1) ~/ 2;
+    Widget tile(int i) {
+      if (i >= items.length) return const SizedBox.shrink();
+      final it = items[i];
+      return ItemTile(
+        id: it.spotifyId,
+        title: '${i + 1}. ${it.item.name}',
+        subtitle: '${it.item.subtitle ?? ''} · 리뷰 ${it.reviewCount}',
+        imageUrl: it.item.imageUrl,
+        rating: it.averageRating,
+        onTap: () => context.push(Routes.item('playlist', it.spotifyId)),
+      );
+    }
+
+    return Column(children: [
+      for (var r = 0; r < rows; r++)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Expanded(child: tile(r * 2)),
+            const SizedBox(width: 12),
+            Expanded(child: tile(r * 2 + 1)),
+          ]),
+        ),
+    ]);
   }
 }
