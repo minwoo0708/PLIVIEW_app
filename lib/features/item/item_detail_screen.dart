@@ -299,7 +299,11 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
         ),
       );
 
-  List<Widget> _trackList(SpotifyItem item) => [
+  List<Widget> _trackList(SpotifyItem item) {
+    // 수록곡 평점은 서버에서 한 번에 받아요.
+    final ids = item.tracks.map((t) => t.id).join(',');
+    final ratings = ref.watch(trackRatingsProvider(ids)).asData?.value ?? const <String, TrackRating>{};
+    return [
         const SizedBox(height: 18),
         Text('수록곡', style: AppText.gothic(16, weight: FontWeight.w800, color: AppColors.textPrimary)),
         const SizedBox(height: 4),
@@ -312,14 +316,16 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
               number: i + 1,
               track: item.tracks[i],
               duration: item.tracks[i].durationMs == null ? null : _duration(item.tracks[i].durationMs!),
+              rating: ratings[item.tracks[i].id],
               onTap: () async {
                 await context.push(Routes.item('track', item.tracks[i].id));
                 // 곡 평가를 남기고 돌아오면 곡 평점을 새로 불러옵니다.
-                if (mounted) ref.invalidate(itemSummaryProvider(('track', item.tracks[i].id)));
+                if (mounted) ref.invalidate(trackRatingsProvider(ids));
               },
             ),
           ),
-      ];
+    ];
+  }
 
   String _duration(int ms) {
     final s = ms ~/ 1000;
@@ -495,20 +501,20 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
 }
 
 /// 수록곡 한 줄: 번호 · 곡 이름 · (모두의 평균 별점 / 내 별점) · 길이.
-/// 곡마다 요약을 따로 불러와서 평점이 준비되면 채워 넣습니다.
-class _TrackRow extends ConsumerWidget {
-  const _TrackRow({required this.number, required this.track, required this.duration, required this.onTap});
+/// 평점은 서버의 곡별 평점 일괄 조회 결과를 받아서 보여 줍니다.
+class _TrackRow extends StatelessWidget {
+  const _TrackRow({required this.number, required this.track, required this.duration, required this.rating, required this.onTap});
 
   final int number;
   final SpotifyItem track;
   final String? duration;
+  final TrackRating? rating;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final summary = ref.watch(itemSummaryProvider(('track', track.id))).asData?.value;
-    final avg = summary?.averageRating;
-    final mine = summary?.myReview?.rating;
+  Widget build(BuildContext context) {
+    final avg = rating?.averageRating;
+    final mine = rating?.myRating;
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,

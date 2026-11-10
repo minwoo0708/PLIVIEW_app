@@ -44,3 +44,8 @@ void refreshItem(WidgetRef ref, ItemKey key) {
     ref.invalidate(itemReviewsProvider((key, sort)));
   }
 }
+
+/// 앨범 수록곡 평점을 한 번에 조회합니다. 키는 곡 id를 쉼표로 이은 문자열이에요.
+final trackRatingsProvider = FutureProvider.autoDispose.family<Map<String, TrackRating>, String>((ref, ids) {
+  return ref.watch(musicRepositoryProvider).trackRatings(ids.split(',').where((e) => e.isNotEmpty).toList());
+});
