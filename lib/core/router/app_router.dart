@@ -6,6 +6,7 @@ import '../../features/auth/login_screen.dart';
 import '../../features/auth/signup_screen.dart';
 import '../../features/auth/splash_screen.dart';
 import '../../features/auth/start_screen.dart';
+import '../../features/home/home_screen.dart';
 import '../../features/item/artist_screen.dart';
 import '../../features/item/item_detail_screen.dart';
 import '../../features/placeholder/tab_placeholder.dart';
@@ -85,7 +86,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state, shell) => MainShell(navigationShell: shell),
         branches: [
           StatefulShellBranch(routes: [
-            GoRoute(path: Routes.home, builder: (_, _) => const TabPlaceholder(title: '홈')),
+            GoRoute(path: Routes.home, builder: (_, _) => const HomeScreen()),
           ]),
           StatefulShellBranch(routes: [
             GoRoute(path: Routes.search, builder: (_, _) => const SearchScreen()),
