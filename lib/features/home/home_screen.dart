@@ -20,6 +20,7 @@ class HomeScreen extends ConsumerWidget {
   Future<void> _refresh(WidgetRef ref) async {
     ref.invalidate(weeklyAlbumProvider);
     ref.invalidate(popularAlbumsProvider);
+    ref.invalidate(popularPlaylistsProvider);
     ref.invalidate(feedProvider);
     ref.invalidate(weeklyPlaylistsProvider);
     await Future.wait([
@@ -34,20 +35,33 @@ class HomeScreen extends ConsumerWidget {
     final user = ref.watch(currentUserProvider);
     final weekly = ref.watch(weeklyAlbumProvider);
     final popular = ref.watch(popularAlbumsProvider);
+    final popularPlaylists = ref.watch(popularPlaylistsProvider);
     final feed = ref.watch(feedProvider);
     final weeklyPlaylists = ref.watch(weeklyPlaylistsProvider).asData?.value ?? const [];
     final bottom = MediaQuery.paddingOf(context).bottom + 110;
 
     return Container(
-      decoration: const BoxDecoration(gradient: AppColors.homeGradient),
+      color: AppColors.surface,
       child: SafeArea(
         bottom: false,
         child: RefreshIndicator(
           color: AppColors.primary,
           onRefresh: () => _refresh(ref),
           child: ListView(
-            padding: EdgeInsets.fromLTRB(20, 8, 20, bottom),
+            padding: EdgeInsets.zero,
             children: [
+              // 위쪽 보라 배경은 내용과 함께 스크롤돼서, 아래로 내려도 제목이 묻히지 않아요.
+              Stack(children: [
+                const Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: 720,
+                  child: DecoratedBox(decoration: BoxDecoration(gradient: AppColors.homeGradient)),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(20, 8, 20, bottom),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
               Text('안녕하세요, ${user?.nickname ?? ''}님',
                   style: AppText.gothic(13, weight: FontWeight.w500, color: AppColors.white70)),
               const SizedBox(height: 4),
@@ -61,7 +75,7 @@ class HomeScreen extends ConsumerWidget {
                 _HeroCard(item: weekly.asData!.value!),
                 const SizedBox(height: 16),
               ],
-              _section('지금 많이 듣는 앨범', onMore: () => context.go(Routes.search)),
+              _section('지금 많이 듣는 앨범', onMore: () => context.push(Routes.topRated('album'))),
               const SizedBox(height: 14),
               popular.when(
                 loading: () => const _Loading(),
@@ -69,6 +83,16 @@ class HomeScreen extends ConsumerWidget {
                 data: (list) => list.isEmpty
                     ? const _Empty('아직 리뷰가 없어요.\n탐색에서 앨범을 찾아 첫 리뷰를 남겨 보세요!')
                     : _AlbumGrid(items: list),
+              ),
+              const SizedBox(height: 22),
+              _section('지금 많이 듣는 플리', onMore: () => context.push(Routes.topRated('playlist'))),
+              const SizedBox(height: 14),
+              popularPlaylists.when(
+                loading: () => const _Loading(),
+                error: (e, _) => _ErrorText(e, onRetry: () => ref.invalidate(popularPlaylistsProvider)),
+                data: (list) => list.isEmpty
+                    ? const _Empty('아직 평가된 플리가 없어요.\n탐색에서 플리를 찾아 첫 리뷰를 남겨 보세요!')
+                    : _AlbumGrid(items: list, kind: 'playlist'),
               ),
               // 이번 주의 플리는 기준(리뷰 50개 이상)을 넘은 게 있을 때만 보여 줍니다.
               if (weeklyPlaylists.isNotEmpty) ...[
@@ -97,8 +121,11 @@ class HomeScreen extends ConsumerWidget {
                           ),
                       ]),
               ),
-            ],
-          ),
+            ]),
+                  ),
+                ]),
+              ],
+            ),
         ),
       ),
     );
@@ -178,9 +205,12 @@ class _HeroCard extends StatelessWidget {
 }
 
 class _AlbumGrid extends StatelessWidget {
-  const _AlbumGrid({required this.items});
+  const _AlbumGrid({required this.items, this.kind = 'album'});
 
   final List<PopularItem> items;
+
+  /// album 또는 playlist. 누르면 이 종류의 상세로 가요.
+  final String kind;
 
   @override
   Widget build(BuildContext context) {
@@ -194,7 +224,7 @@ class _AlbumGrid extends StatelessWidget {
         subtitle: it.item.subtitle,
         imageUrl: it.item.imageUrl,
         rating: it.averageRating,
-        onTap: () => context.push(Routes.item('album', it.spotifyId)),
+        onTap: () => context.push(Routes.item(kind, it.spotifyId)),
       );
     }
 
