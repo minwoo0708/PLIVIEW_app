@@ -8,6 +8,7 @@ import '../../core/router/app_router.dart';
 import '../../core/spotify/spotify_auth.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
+import '../../shared/widgets/gradient_backdrop.dart';
 import '../../shared/widgets/cover_image.dart';
 import '../../shared/widgets/primary_button.dart';
 import '../../shared/widgets/star_picker.dart';
@@ -21,15 +22,7 @@ class HistoryScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final link = ref.watch(spotifyLinkProvider);
     final connected = link.value ?? false;
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [AppColors.ink, AppColors.inkMid, AppColors.surface, AppColors.surface],
-          stops: [0, 0.22, 0.38, 1],
-        ),
-      ),
+    return GradientBackdrop(
       child: SafeArea(
         bottom: false,
         child: Padding(
@@ -87,10 +80,14 @@ class _ConnectGuideState extends ConsumerState<_ConnectGuide> {
                 width: 30, height: 30, colorFilter: const ColorFilter.mode(AppColors.primary, BlendMode.srcIn)),
           ),
           const SizedBox(height: 16),
-          Text('Spotify 연동하면 볼 수 있어요', style: AppText.mixed(16, weight: FontWeight.w800, color: AppColors.textPrimary)),
+          AdaptiveColor(onDark: Colors.white, onLight: AppColors.textPrimary, builder: (_, c) => Text('Spotify 연동하면 볼 수 있어요', style: AppText.mixed(16, weight: FontWeight.w800, color: c))),
           const SizedBox(height: 6),
-          Text('최근에 들은 곡을 바로 평가할 수 있어요.\n연동은 설정에서 언제든 해제할 수 있어요.',
-              textAlign: TextAlign.center, style: AppText.gothic(13, color: AppColors.textSecondary, height: 1.5)),
+          AdaptiveColor(
+            onDark: AppColors.white75,
+            onLight: AppColors.textSecondary,
+            builder: (_, c) => Text('최근에 들은 곡을 바로 평가할 수 있어요.\n연동은 설정에서 언제든 해제할 수 있어요.',
+                textAlign: TextAlign.center, style: AppText.gothic(13, color: c, height: 1.5)),
+          ),
           const SizedBox(height: 20),
           SizedBox(
             width: 240,

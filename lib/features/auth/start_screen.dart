@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
+import '../../shared/widgets/gradient_backdrop.dart';
 import '../../shared/widgets/brand_chip.dart';
 import '../../shared/widgets/primary_button.dart';
 
@@ -15,8 +16,7 @@ class StartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.startGradient),
+      body: GradientBackdrop(
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),

@@ -7,6 +7,7 @@ import '../../core/models/stats.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
+import '../../shared/widgets/gradient_backdrop.dart';
 import '../../shared/widgets/avatar.dart';
 import '../../shared/widgets/brand_chip.dart';
 import '../../shared/widgets/item_tile.dart';
@@ -23,15 +24,7 @@ class CuratorScreen extends ConsumerWidget {
     final profile = ref.watch(curatorProfileProvider(userId));
     final playlists = ref.watch(curatorPlaylistsProvider(userId));
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [AppColors.ink, AppColors.inkMid, AppColors.surface, AppColors.surface],
-            stops: [0, 0.34, 0.50, 1],
-          ),
-        ),
+      body: GradientBackdrop(
         child: SafeArea(
           bottom: false,
           child: ListView(
@@ -60,7 +53,7 @@ class CuratorScreen extends ConsumerWidget {
                 data: (c) => _Header(curator: c),
               ),
               const SizedBox(height: 18),
-              Text('플리 인기순', style: AppText.gothic(16, weight: FontWeight.w800, color: AppColors.textPrimary)),
+              AdaptiveColor(onDark: Colors.white, onLight: AppColors.textPrimary, builder: (_, c) => Text('플리 인기순', style: AppText.gothic(16, weight: FontWeight.w800, color: c))),
               const SizedBox(height: 12),
               playlists.when(
                 loading: () => const Padding(

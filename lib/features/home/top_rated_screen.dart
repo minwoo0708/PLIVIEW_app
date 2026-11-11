@@ -7,6 +7,7 @@ import '../../core/models/review.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
+import '../../shared/widgets/gradient_backdrop.dart';
 import '../../shared/widgets/brand_chip.dart';
 import '../../shared/widgets/item_tile.dart';
 import 'home_providers.dart';
@@ -22,15 +23,7 @@ class TopRatedScreen extends ConsumerWidget {
     final list = ref.watch(topRatedProvider(type));
     final label = type == ItemType.playlist ? '플리' : '앨범';
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [AppColors.ink, AppColors.inkMid, AppColors.surface, AppColors.surface],
-            stops: [0, 0.2, 0.34, 1],
-          ),
-        ),
+      body: GradientBackdrop(
         child: SafeArea(
           bottom: false,
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

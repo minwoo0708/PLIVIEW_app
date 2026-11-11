@@ -12,6 +12,7 @@ import '../../core/models/stats.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
+import '../../shared/widgets/gradient_backdrop.dart';
 import '../../shared/widgets/brand_chip.dart';
 import '../../shared/widgets/cover_image.dart';
 import '../../shared/widgets/review_card.dart';
@@ -81,25 +82,18 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
     final bottomInset = MediaQuery.paddingOf(context).bottom;
 
     return Scaffold(
-      body: Container(
-        color: AppColors.surface,
+      body: GradientBackdrop(
         child: SafeArea(
           bottom: false,
           child: itemAsync.when(
-            loading: () => ColoredBox(
-              color: AppColors.ink,
-              child: Column(children: [
+            loading: () => Column(children: [
                 _topBar(),
                 const Expanded(child: Center(child: CircularProgressIndicator(color: AppColors.lavender))),
               ]),
-            ),
-            error: (e, _) => ColoredBox(
-              color: AppColors.ink,
-              child: Column(children: [
+            error: (e, _) => Column(children: [
                 _topBar(),
                 Expanded(child: _errorView(e)),
               ]),
-            ),
             data: (item) => Stack(children: [
               RefreshIndicator(
                 color: AppColors.primary,
@@ -110,17 +104,8 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
                 child: ListView(
                   padding: EdgeInsets.zero,
                   children: [
-                    // 위쪽 헤더만 진한 보라 그라데이션, 아래는 밝은 배경
-                    Container(
+                    Padding(
                       padding: const EdgeInsets.fromLTRB(20, 0, 20, 36),
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [AppColors.ink, AppColors.inkMid, AppColors.surface],
-                          stops: [0, 0.82, 1],
-                        ),
-                      ),
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                         _topBar(padding: EdgeInsets.zero),
                         const SizedBox(height: 14),
@@ -248,7 +233,7 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
           Text(avg.toStringAsFixed(1), style: AppText.display(34)),
           const SizedBox(width: 10),
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            StarRating(value: avg),
+            StarRating(value: avg, fillColor: Colors.white),
             const SizedBox(height: 2),
             Text.rich(TextSpan(style: AppText.gothic(11, color: AppColors.white70), children: [
               TextSpan(text: '${s.reviewCount}', style: AppText.grotesk(11, color: AppColors.white70)),
@@ -302,9 +287,9 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
   /// 플리 곡 목록은 Spotify 정책상 앱이 받을 수 없어서, 원본 플리를 Spotify에서 열도록 안내해요.
   List<Widget> _playlistOpenSection(SpotifyItem item) => [
         const SizedBox(height: 18),
-        Text('수록곡', style: AppText.gothic(16, weight: FontWeight.w800, color: AppColors.textPrimary)),
+        AdaptiveColor(onDark: Colors.white, onLight: AppColors.textPrimary, builder: (_, c) => Text('수록곡', style: AppText.gothic(16, weight: FontWeight.w800, color: c))),
         const SizedBox(height: 4),
-        Text('플리의 곡 목록은 Spotify에서 볼 수 있어요', style: AppText.gothic(12, color: AppColors.textSecondary)),
+        AdaptiveColor(onDark: AppColors.white75, onLight: const Color(0xFF3F3A5C), builder: (_, c) => Text('플리의 곡 목록은 Spotify에서 볼 수 있어요', style: AppText.gothic(12, color: c))),
         const SizedBox(height: 10),
         _pill(
           color: AppColors.spotifyGreen,
@@ -326,9 +311,9 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
     final ratings = ref.watch(trackRatingsProvider(ids)).asData?.value ?? const <String, TrackRating>{};
     return [
         const SizedBox(height: 18),
-        Text('수록곡', style: AppText.gothic(16, weight: FontWeight.w800, color: AppColors.textPrimary)),
+        AdaptiveColor(onDark: Colors.white, onLight: AppColors.textPrimary, builder: (_, c) => Text('수록곡', style: AppText.gothic(16, weight: FontWeight.w800, color: c))),
         const SizedBox(height: 4),
-        Text('곡을 누르면 곡 평가를 남길 수 있어요', style: AppText.gothic(12, color: AppColors.textSecondary)),
+        AdaptiveColor(onDark: AppColors.white75, onLight: const Color(0xFF3F3A5C), builder: (_, c) => Text('곡을 누르면 곡 평가를 남길 수 있어요', style: AppText.gothic(12, color: c))),
         const SizedBox(height: 10),
         for (var i = 0; i < tracks.length; i++)
           Padding(
@@ -465,7 +450,7 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
     final reviews = ref.watch(itemReviewsProvider((_key, _sort)));
     const sorts = [('latest', '최신순'), ('rating_desc', '별점 높은 순'), ('rating_asc', '별점 낮은 순')];
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text('리뷰', style: AppText.gothic(16, weight: FontWeight.w800, color: AppColors.textPrimary)),
+      AdaptiveColor(onDark: Colors.white, onLight: AppColors.textPrimary, builder: (_, c) => Text('리뷰', style: AppText.gothic(16, weight: FontWeight.w800, color: c))),
       const SizedBox(height: 10),
       Wrap(spacing: 8, children: [
         for (final (value, label) in sorts)

@@ -26,29 +26,18 @@ abstract final class AppColors {
   static const navBackground = Color(0xF0170A40);
   static const badgeBackground = Color(0x8C000000);
 
-  /// 홈 배경: ink → inkMid(30%) → surface(56%)
-  static const homeGradient = LinearGradient(
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-    colors: [ink, inkMid, surface, surface],
-    stops: [0, 0.30, 0.56, 1],
-  );
-
-  /// 평가하기 배경: 같은 색, 정지점 0 / 26 / 40 / 100%
-  static const rateGradient = LinearGradient(
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-    colors: [ink, inkMid, surface, surface],
-    stops: [0, 0.26, 0.40, 1],
-  );
-
-  /// 시작하기 배경
-  static const startGradient = LinearGradient(
+  /// 모든 화면의 배경(피그마 PLIVIEW v2): 화면 전체 높이에 걸쳐 진남색 → 보라(50%) → 연보라(92%) → 연보라.
+  static const screenGradient = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
     colors: [ink, Color(0xFF4B2BD6), surface, surface],
     stops: [0, 0.5, 0.92, 1],
   );
+
+  // 예전 이름들(같은 그라데이션을 가리켜요).
+  static const homeGradient = screenGradient;
+  static const rateGradient = screenGradient;
+  static const startGradient = screenGradient;
 
   /// 히어로 카드 (약 163°, 끝점 73%)
   static const heroGradient = LinearGradient(

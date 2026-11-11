@@ -12,6 +12,7 @@ import '../../core/models/spotify_item.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
+import '../../shared/widgets/gradient_backdrop.dart';
 import '../../shared/widgets/item_tile.dart';
 
 /// 03 탐색 (Spotify 검색)
@@ -153,15 +154,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [AppColors.ink, AppColors.inkMid, AppColors.surface, AppColors.surface],
-          stops: [0, 0.24, 0.40, 1],
-        ),
-      ),
+    return GradientBackdrop(
       child: SafeArea(
         bottom: false,
         child: Column(
@@ -364,8 +357,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(text,
-                  textAlign: TextAlign.center, style: AppText.gothic(14, color: AppColors.textSecondary)),
+              AdaptiveColor(
+                onDark: AppColors.white75,
+                onLight: AppColors.textSecondary,
+                builder: (_, c) => Text(text, textAlign: TextAlign.center, style: AppText.gothic(14, color: c)),
+              ),
               if (retry != null) ...[
                 const SizedBox(height: 12),
                 TextButton(onPressed: retry, child: const Text('다시 시도')),

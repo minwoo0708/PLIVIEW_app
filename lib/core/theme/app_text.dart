@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 /// 글꼴 규칙
-/// - display: 제목, 카드 제목, 큰 점수 숫자. 굵고 또렷한 고딕 (한글은 Gothic A1, 영문·숫자는 Space Grotesk)
+/// - display(Jua): 제목, 카드 제목, 큰 점수 숫자 (동글동글한 글꼴, 피그마 기준)
 /// - Gothic A1: 한글 본문
 /// - Space Grotesk: 영문·숫자 (곡명, 아티스트, 점수, 시간)
 ///
@@ -10,9 +10,9 @@ import 'package:google_fonts/google_fonts.dart';
 /// 한글은 Gothic A1로 대체(fallback)되게 합니다. 디자인에서 영문·숫자만
 /// Space Grotesk로 쓰는 것과 같은 결과가 나옵니다.
 abstract final class AppText {
-  /// 제목용 굵은 고딕. 동글동글한 글꼴 대신 깔끔한 고딕으로 통일합니다.
+  /// 제목·카드 제목·큰 점수 숫자용 동글동글한 글꼴(피그마의 Jua). 자간 -1%.
   static TextStyle display(double size, {Color color = Colors.white, double? height}) {
-    return mixed(size, weight: FontWeight.w800, color: color, height: height, letterSpacing: -size * 0.02);
+    return GoogleFonts.jua(fontSize: size, color: color, height: height, letterSpacing: -size * 0.01);
   }
 
   static TextStyle gothic(
