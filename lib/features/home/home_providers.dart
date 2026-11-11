@@ -10,6 +10,22 @@ final weeklyAlbumProvider = FutureProvider.autoDispose<PopularItem?>((ref) async
   return list.isEmpty ? null : list.first;
 });
 
+/// "지금 많이 듣는 플리" 목록 (최근 7일 리뷰가 많은 순).
+final popularPlaylistsProvider = FutureProvider.autoDispose<List<PopularItem>>((ref) {
+  return ref.watch(musicRepositoryProvider).popular(type: ItemType.playlist, days: 7, limit: 10);
+});
+
+/// 더보기 화면용: 최근 90일 동안 리뷰가 달린 항목을 평점 높은 순(같으면 리뷰 많은 순)으로 보여 줘요.
+final topRatedProvider = FutureProvider.autoDispose.family<List<PopularItem>, ItemType>((ref, type) async {
+  final list = await ref.watch(musicRepositoryProvider).popular(type: type, days: 90, limit: 50);
+  final rated = list.where((p) => p.averageRating != null).toList()
+    ..sort((a, b) {
+      final byRating = b.averageRating!.compareTo(a.averageRating!);
+      return byRating != 0 ? byRating : b.reviewCount.compareTo(a.reviewCount);
+    });
+  return rated;
+});
+
 /// "지금 많이 듣는 앨범" 목록 (최근 7일 리뷰가 많은 순).
 final popularAlbumsProvider = FutureProvider.autoDispose<List<PopularItem>>((ref) {
   return ref.watch(musicRepositoryProvider).popular(type: ItemType.album, days: 7, limit: 10);

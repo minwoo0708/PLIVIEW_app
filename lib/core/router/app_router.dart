@@ -8,6 +8,8 @@ import '../../features/auth/splash_screen.dart';
 import '../../features/auth/start_screen.dart';
 import '../../features/history/history_screen.dart';
 import '../../features/home/home_screen.dart';
+import '../../features/home/top_rated_screen.dart';
+import '../../features/item/item_providers.dart' show typeOfKind;
 import '../../features/item/artist_screen.dart';
 import '../../features/item/item_detail_screen.dart';
 import '../../features/profile/curator_screen.dart';
@@ -32,6 +34,9 @@ abstract final class Routes {
   static const rate = '/rate';
   static const settings = '/settings';
   static const ranking = '/ranking';
+
+  /// 홈 "더보기": 평점 높은 앨범/플리 목록. kind는 album 또는 playlist.
+  static String topRated(String kind) => '/top/$kind';
   static String curator(int userId) => '/curator/$userId';
 
   /// 상세 화면. kind는 track / album / artist / playlist.
@@ -91,6 +96,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(path: Routes.settings, builder: (_, _) => const SettingsScreen()),
       GoRoute(path: Routes.ranking, builder: (_, _) => const RankingScreen()),
+      GoRoute(
+        path: '/top/:kind',
+        builder: (_, s) => TopRatedScreen(type: typeOfKind(s.pathParameters['kind']!)),
+      ),
       GoRoute(
         path: '/curator/:userId',
         builder: (_, s) => CuratorScreen(userId: int.parse(s.pathParameters['userId']!)),
