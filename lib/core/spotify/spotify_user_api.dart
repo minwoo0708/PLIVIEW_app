@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../api/api_exception.dart';
@@ -90,59 +89,6 @@ class SpotifyUserApi {
         throw _map(e);
       }
     }
-  }
-
-  /// 곡 id → 그 곡 대표 아티스트의 장르 목록.
-  /// Spotify가 개발 모드에서 여러 개를 한 번에 조회하는 API를 막아서, 곡·아티스트를 하나씩 조회해요
-  /// (10개씩 동시에). 실패한 곡은 건너뛰고, 모두 실패하면 빈 결과를 돌려줘요.
-  Future<Map<String, List<String>>> trackGenres(List<String> trackIds) async {
-    final result = <String, List<String>>{};
-    try {
-      final options = await _options();
-      final ids = trackIds.take(100).toList();
-
-      Future<T?> safe<T>(Future<T> Function() call) async {
-        try {
-          return await call();
-        } on DioException catch (e) {
-          if (kDebugMode) debugPrint('[SpotifyDiag] genre call ${e.requestOptions.path} -> ${e.response?.statusCode}');
-          return null;
-        }
-      }
-
-      // 1) 곡 → 대표 아티스트 id
-      final artistOfTrack = <String, String>{};
-      for (var i = 0; i < ids.length; i += 10) {
-        final chunk = ids.sublist(i, i + 10 > ids.length ? ids.length : i + 10);
-        final responses = await Future.wait(chunk.map((id) => safe(() => _dio.get('/v1/tracks/$id', options: options))));
-        for (var k = 0; k < chunk.length; k++) {
-          final data = responses[k]?.data;
-          final artists = data is Map ? data['artists'] as List? : null;
-          if (artists != null && artists.isNotEmpty) artistOfTrack[chunk[k]] = (artists.first as Map)['id'] as String;
-        }
-      }
-
-      // 2) 아티스트 → 장르 (같은 아티스트는 한 번만)
-      final artistIds = artistOfTrack.values.toSet().toList();
-      final genresOfArtist = <String, List<String>>{};
-      for (var i = 0; i < artistIds.length; i += 10) {
-        final chunk = artistIds.sublist(i, i + 10 > artistIds.length ? artistIds.length : i + 10);
-        final responses = await Future.wait(chunk.map((id) => safe(() => _dio.get('/v1/artists/$id', options: options))));
-        for (var k = 0; k < chunk.length; k++) {
-          final data = responses[k]?.data;
-          if (data is Map) genresOfArtist[chunk[k]] = (data['genres'] as List? ?? const []).cast<String>();
-        }
-      }
-      artistOfTrack.forEach((track, artist) {
-        if (genresOfArtist.containsKey(artist)) result[track] = genresOfArtist[artist]!;
-      });
-      if (kDebugMode) {
-        debugPrint('[SpotifyDiag] genres tracks=${ids.length} artists=${artistIds.length} withGenres=${genresOfArtist.values.where((g) => g.isNotEmpty).length}');
-      }
-    } catch (_) {
-      return const {};
-    }
-    return result;
   }
 }
 

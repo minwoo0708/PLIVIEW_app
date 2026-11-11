@@ -16,12 +16,11 @@ import '../../shared/widgets/cover_image.dart';
 import '../../shared/widgets/gradient_backdrop.dart';
 import '../../shared/widgets/primary_button.dart';
 import '../profile/profile_providers.dart';
-import 'genre_bucket.dart';
 
 const _ratingOptions = [3.0, 3.5, 4.0, 4.5, 5.0];
 
 /// 내 취향 플리 만들기: 내가 높게 평가한 곡을 모아 Spotify 플리로 만들어요.
-/// ① n점 이상 ② 장르 ③ 곡마다 체크로 직접 고르기 — 셋을 함께 쓸 수 있어요.
+/// ① n점 이상 ② 곡마다 체크로 직접 고르기 — 둘을 함께 쓸 수 있어요.
 class PlaylistMakerScreen extends ConsumerStatefulWidget {
   const PlaylistMakerScreen({super.key});
 
@@ -31,7 +30,6 @@ class PlaylistMakerScreen extends ConsumerStatefulWidget {
 
 class _PlaylistMakerScreenState extends ConsumerState<PlaylistMakerScreen> {
   double _minRating = 4.5;
-  GenreBucket? _genre; // null = 전체
   final Set<String> _unchecked = {}; // 직접 뺀 곡
   final _name = TextEditingController(text: '내가 좋아하는 곡들');
   bool _public = false;
@@ -40,10 +38,6 @@ class _PlaylistMakerScreenState extends ConsumerState<PlaylistMakerScreen> {
   String? _doneUrl;
   int _doneCount = 0;
 
-  /// 곡 id → 장르 묶음. 불러오기 전/실패하면 비어 있어요.
-  Map<String, Set<GenreBucket>> _genres = const {};
-  bool _genreLoading = false;
-  bool _genreTried = false;
 
   @override
   void dispose() {
@@ -51,22 +45,10 @@ class _PlaylistMakerScreenState extends ConsumerState<PlaylistMakerScreen> {
     super.dispose();
   }
 
-  Future<void> _loadGenres(List<Review> tracks) async {
-    if (_genreTried || tracks.isEmpty) return;
-    _genreTried = true;
-    setState(() => _genreLoading = true);
-    final raw = await ref.read(spotifyUserApiProvider).trackGenres(tracks.map((t) => t.spotifyId).toList());
-    if (!mounted) return;
-    setState(() {
-      _genres = {for (final e in raw.entries) e.key: GenreBucket.fromGenres(e.value)};
-      _genreLoading = false;
-    });
-  }
 
   List<Review> _visible(List<Review> all) {
     return all.where((r) {
       if (r.rating < _minRating) return false;
-      if (_genre != null && !(_genres[r.spotifyId]?.contains(_genre) ?? false)) return false;
       return true;
     }).toList();
   }
@@ -172,7 +154,6 @@ class _PlaylistMakerScreenState extends ConsumerState<PlaylistMakerScreen> {
                   data: (all) {
                     final tracks = all.where((r) => r.type == ItemType.track).toList();
                     if (tracks.isEmpty) return _notice('아직 평가한 곡이 없어요. 곡을 평가하고 다시 와 주세요.');
-                    WidgetsBinding.instance.addPostFrameCallback((_) => _loadGenres(tracks));
                     return _body(tracks);
                   },
                 ),
@@ -209,21 +190,9 @@ class _PlaylistMakerScreenState extends ConsumerState<PlaylistMakerScreen> {
           _chip('${r.toStringAsFixed(1)}점 이상', _minRating == r, () => setState(() => _minRating = r)),
       ]),
       const SizedBox(height: 18),
-      _section('② 장르'),
-      if (_genreLoading)
-        Text('장르를 불러오는 중…', style: AppText.gothic(12, color: AppColors.white75))
-      else if (_genres.isEmpty)
-        Text('Spotify가 장르 정보를 주지 않아서 지금은 장르로 나눌 수 없어요. 별점과 직접 고르기로 만들 수 있어요.', style: AppText.gothic(12, color: AppColors.white75))
-      else
-        Wrap(spacing: 8, runSpacing: 8, children: [
-          _chip('전체', _genre == null, () => setState(() => _genre = null)),
-          for (final g in GenreBucket.values)
-            if (tracks.any((t) => _genres[t.spotifyId]?.contains(g) ?? false))
-              _chip(g.label, _genre == g, () => setState(() => _genre = g)),
-        ]),
       const SizedBox(height: 18),
       Row(children: [
-        Expanded(child: _section('③ 곡 고르기 (${chosen.length}/${visible.length})', padding: false)),
+        Expanded(child: _section('② 곡 고르기 (${chosen.length}/${visible.length})', padding: false)),
         GestureDetector(
           onTap: () => setState(() {
             if (chosen.length == visible.length) {
@@ -241,7 +210,7 @@ class _PlaylistMakerScreenState extends ConsumerState<PlaylistMakerScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 24),
           child: Center(
-            child: Text('조건에 맞는 곡이 없어요.\n기준을 낮추거나 장르를 바꿔 보세요.',
+            child: Text('조건에 맞는 곡이 없어요.\n기준 별점을 낮춰 보세요.',
                 textAlign: TextAlign.center, style: AppText.gothic(13, color: AppColors.textSecondary, height: 1.5)),
           ),
         )
