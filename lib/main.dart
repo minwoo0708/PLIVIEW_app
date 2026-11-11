@@ -7,6 +7,7 @@ import 'core/router/app_router.dart';
 import 'core/settings/app_settings.dart';
 import 'core/theme/app_colors.dart';
 import 'core/theme/app_theme.dart';
+import 'shared/widgets/network_guard.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,7 +57,7 @@ class PliviewApp extends ConsumerWidget {
         ));
         return MediaQuery(
           data: media.copyWith(textScaler: TextScaler.linear(scale)),
-          child: KeyedSubtree(key: ValueKey(brightness), child: child!),
+          child: KeyedSubtree(key: ValueKey(brightness), child: NetworkGuard(child: child!)),
         );
       },
     );
