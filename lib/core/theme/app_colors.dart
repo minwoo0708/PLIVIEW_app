@@ -23,6 +23,10 @@ abstract final class AppColors {
   static Color get textPrimary => _dark ? const Color(0xFFF3EFFF) : const Color(0xFF1A1233);
   static Color get textSecondary => _dark ? const Color(0xFFA8A2C9) : const Color(0xFF6F6A8A);
 
+  /// 스켈레톤(로딩 자리표시)의 기본색과 반짝이는 색
+  static Color get skeletonBase => _dark ? const Color(0xFF2B2152) : const Color(0xFFD9CFFA);
+  static Color get skeletonHighlight => _dark ? const Color(0xFF3B2F72) : const Color(0xFFEDE7FF);
+
   /// 막대 그래프의 빈 칸
   /// 카드 위의 강조 글자색(다크에서는 더 밝은 보라)
   static Color get accent => _dark ? const Color(0xFFB9A4FF) : const Color(0xFF5B2EFF);
