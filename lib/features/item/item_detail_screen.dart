@@ -136,7 +136,8 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
                     Padding(
                       padding: EdgeInsets.fromLTRB(20, 0, 20, bottomInset + (_isPlaylist ? 110 : 32)),
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        if (widget.kind == 'album' && item.tracks.isNotEmpty) ..._trackList(item),
+                        if (widget.kind == 'album' && item.tracks.isNotEmpty) ..._trackList(item.tracks),
+                        if (_isPlaylist) ..._playlistTrackSection(),
                         const SizedBox(height: 22),
                         _reviewsSection(item),
                       ]),
@@ -298,10 +299,34 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
           child: SizedBox(height: 46, child: child),
         ),
       );
+  /// 플리 수록곡 섹션: 불러오는 중, 불러올 수 없음(비공개·공식 플리), 곡 목록 세 가지 상태를 보여 줘요.
+  List<Widget> _playlistTrackSection() {
+    final tracks = ref.watch(playlistTracksProvider(widget.id));
+    return tracks.when(
+      loading: () => const [
+        SizedBox(height: 18),
+        Center(child: Padding(padding: EdgeInsets.all(16), child: CircularProgressIndicator(color: AppColors.primary))),
+      ],
+      error: (e, _) => [
+        const SizedBox(height: 18),
+        Text('수록곡', style: AppText.gothic(16, weight: FontWeight.w800, color: AppColors.textPrimary)),
+        const SizedBox(height: 8),
+        Text(
+          e is ApiException && (e.status == 403 || e.status == 404)
+              ? '불러올 수 없는 플리예요. 비공개이거나 Spotify 공식 플리일 수 있어요.'
+              : (e is ApiException ? e.userMessage : '수록곡을 불러올 수 없어요.'),
+          style: AppText.gothic(13, color: AppColors.textSecondary),
+        ),
+        TextButton(onPressed: () => ref.invalidate(playlistTracksProvider(widget.id)), child: const Text('다시 시도')),
+      ],
+      data: (list) => list.isEmpty ? const [] : _trackList(list),
+    );
+  }
 
-  List<Widget> _trackList(SpotifyItem item) {
+
+  List<Widget> _trackList(List<SpotifyItem> tracks) {
     // 수록곡 평점은 서버에서 한 번에 받아요.
-    final ids = item.tracks.map((t) => t.id).join(',');
+    final ids = tracks.map((t) => t.id).join(',');
     final ratings = ref.watch(trackRatingsProvider(ids)).asData?.value ?? const <String, TrackRating>{};
     return [
         const SizedBox(height: 18),
@@ -309,16 +334,16 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
         const SizedBox(height: 4),
         Text('곡을 누르면 곡 평가를 남길 수 있어요', style: AppText.gothic(12, color: AppColors.textSecondary)),
         const SizedBox(height: 10),
-        for (var i = 0; i < item.tracks.length; i++)
+        for (var i = 0; i < tracks.length; i++)
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: _TrackRow(
               number: i + 1,
-              track: item.tracks[i],
-              duration: item.tracks[i].durationMs == null ? null : _duration(item.tracks[i].durationMs!),
-              rating: ratings[item.tracks[i].id],
+              track: tracks[i],
+              duration: tracks[i].durationMs == null ? null : _duration(tracks[i].durationMs!),
+              rating: ratings[tracks[i].id],
               onTap: () async {
-                await context.push(Routes.item('track', item.tracks[i].id));
+                await context.push(Routes.item('track', tracks[i].id));
                 // 곡 평가를 남기고 돌아오면 곡 평점을 새로 불러옵니다.
                 if (mounted) ref.invalidate(trackRatingsProvider(ids));
               },

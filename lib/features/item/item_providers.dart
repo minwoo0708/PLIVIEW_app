@@ -49,3 +49,8 @@ void refreshItem(WidgetRef ref, ItemKey key) {
 final trackRatingsProvider = FutureProvider.autoDispose.family<Map<String, TrackRating>, String>((ref, ids) {
   return ref.watch(musicRepositoryProvider).trackRatings(ids.split(',').where((e) => e.isNotEmpty).toList());
 });
+
+/// 플리 수록곡. 비공개·공식 플리는 서버가 404/403을 줘서 에러로 남고, 화면에서 "불러올 수 없어요"로 보여 줘요.
+final playlistTracksProvider = FutureProvider.autoDispose.family<List<SpotifyItem>, String>((ref, id) {
+  return ref.watch(musicRepositoryProvider).playlistTracks(id);
+});

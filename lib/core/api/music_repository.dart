@@ -34,6 +34,24 @@ class MusicRepository {
   Future<SpotifyItem> playlist(String id) async =>
       SpotifyItem.fromJson(await _api.get('/api/spotify/playlists/$id') as Map<String, dynamic>, 'playlist');
 
+  /// 플리 수록곡(최대 [maxTracks]곡). 서버는 한 번에 50곡씩 주고, 다음 페이지는 next가 null이 아닐 때 offset을 늘려서 받아요.
+  /// 곡 객체 키가 `item` 또는 `track`일 수 있고 null 항목도 섞여 와서 거르며 읽어요.
+  Future<List<SpotifyItem>> playlistTracks(String id, {int maxTracks = 200}) async {
+    final tracks = <SpotifyItem>[];
+    var offset = 0;
+    while (tracks.length < maxTracks) {
+      final json = await _api.get('/api/spotify/playlists/$id/tracks', query: {'limit': 50, 'offset': offset}) as Map<String, dynamic>;
+      final entries = (json['items'] as List? ?? const []);
+      for (final entry in entries.whereType<Map<String, dynamic>>()) {
+        final t = entry['item'] ?? entry['track'];
+        if (t is Map<String, dynamic> && t['id'] != null) tracks.add(SpotifyItem.fromJson(t, 'track'));
+      }
+      if (json['next'] == null || entries.isEmpty) break;
+      offset += 50;
+    }
+    return tracks;
+  }
+
   Future<List<SpotifyItem>> artistAlbums(String id, {int limit = 10}) async {
     final json = await _api.get('/api/spotify/artists/$id/albums', query: {'limit': limit}) as Map<String, dynamic>;
     return (json['items'] as List? ?? const [])
