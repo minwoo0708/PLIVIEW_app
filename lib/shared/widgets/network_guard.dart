@@ -56,7 +56,7 @@ class _NetworkGuardState extends State<NetworkGuard> {
               child: Column(mainAxisSize: MainAxisSize.min, children: [
                 Icon(Icons.wifi_off_rounded, size: 40, color: AppColors.accent),
                 const SizedBox(height: 14),
-                Text('네트워크에 연결할 수 없어요',
+                Text('네트워크 연결이 없어요',
                     textAlign: TextAlign.center,
                     style: AppText.mixed(17, weight: FontWeight.w800, color: AppColors.textPrimary)),
                 const SizedBox(height: 8),
