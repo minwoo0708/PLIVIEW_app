@@ -142,6 +142,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       else
         for (final r in shown) _reviewRow(r),
       const SizedBox(height: 6),
+      _makePlaylistLink(),
+      const SizedBox(height: 10),
       _rankingLink(),
     ]);
   }
@@ -258,6 +260,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ),
             ]),
           ),
+        ),
+      );
+
+  /// 내가 높게 평가한 곡으로 Spotify 플리를 만드는 화면으로 가요.
+  Widget _makePlaylistLink() => GestureDetector(
+        onTap: () => context.push(Routes.makePlaylist),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(AppRadius.totalBar)),
+          child: Row(children: [
+            Text('높게 평가한 곡으로 플리 만들기', style: AppText.gothic(14, weight: FontWeight.w700)),
+            const Spacer(),
+            Text('내 취향 플리', style: AppText.gothic(12, weight: FontWeight.w600, color: AppColors.lavender)),
+            const SizedBox(width: 4),
+            SvgPicture.asset('assets/images/icon_chevron.svg', width: 18, height: 18,
+                colorFilter: const ColorFilter.mode(AppColors.lavender, BlendMode.srcIn)),
+          ]),
         ),
       );
 
