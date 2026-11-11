@@ -221,7 +221,7 @@ class _PlaylistMakerScreenState extends ConsumerState<PlaylistMakerScreen> {
       Container(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.card,
           borderRadius: BorderRadius.circular(AppRadius.cover),
           border: Border.all(color: AppColors.border),
         ),
@@ -260,7 +260,7 @@ class _PlaylistMakerScreenState extends ConsumerState<PlaylistMakerScreen> {
   Widget _done() => Container(
         padding: const EdgeInsets.all(22),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.card,
           borderRadius: BorderRadius.circular(AppRadius.card),
           border: Border.all(color: AppColors.border),
         ),
@@ -312,7 +312,7 @@ class _PlaylistMakerScreenState extends ConsumerState<PlaylistMakerScreen> {
         child: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.card,
             borderRadius: BorderRadius.circular(AppRadius.cover),
             border: Border.all(color: checked ? AppColors.primary : AppColors.border),
           ),
@@ -335,7 +335,7 @@ class _PlaylistMakerScreenState extends ConsumerState<PlaylistMakerScreen> {
                       style: AppText.mixed(12, color: AppColors.textSecondary)),
               ]),
             ),
-            Text('★ ${r.rating.toStringAsFixed(1)}', style: AppText.mixed(13, weight: FontWeight.w700, color: AppColors.primary)),
+            Text('★ ${r.rating.toStringAsFixed(1)}', style: AppText.mixed(13, weight: FontWeight.w700, color: AppColors.accent)),
           ]),
         ),
       ),

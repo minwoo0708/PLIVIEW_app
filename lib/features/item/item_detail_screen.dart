@@ -61,7 +61,7 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('취소')),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('삭제', style: TextStyle(color: AppColors.errorOnLight)),
+            child: Text('삭제', style: TextStyle(color: AppColors.errorOnLight)),
           ),
         ],
       ),
@@ -527,14 +527,14 @@ class _TrackRow extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.card,
           borderRadius: BorderRadius.circular(AppRadius.scoreButton),
           border: Border.all(color: AppColors.border),
         ),
         child: Row(children: [
           SizedBox(
             width: 22,
-            child: Text('$number', style: AppText.grotesk(13, weight: FontWeight.w500, color: AppColors.primary)),
+            child: Text('$number', style: AppText.grotesk(13, weight: FontWeight.w500, color: AppColors.accent)),
           ),
           const SizedBox(width: 6),
           Expanded(
@@ -551,7 +551,7 @@ class _TrackRow extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
               decoration: BoxDecoration(color: AppColors.chip, borderRadius: BorderRadius.circular(AppRadius.pill)),
               child: Text('★ ${avg.toStringAsFixed(1)}',
-                  style: AppText.mixed(12, weight: FontWeight.w700, color: AppColors.primary)),
+                  style: AppText.mixed(12, weight: FontWeight.w700, color: AppColors.accent)),
             ),
           if (mine != null) ...[
             const SizedBox(width: 6),

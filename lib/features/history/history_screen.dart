@@ -74,7 +74,7 @@ class _ConnectGuideState extends ConsumerState<_ConnectGuide> {
           Container(
             width: 72,
             height: 72,
-            decoration: const BoxDecoration(color: AppColors.chip, shape: BoxShape.circle),
+            decoration: BoxDecoration(color: AppColors.chip, shape: BoxShape.circle),
             alignment: Alignment.center,
             child: SvgPicture.asset('assets/images/icon_clock.svg',
                 width: 30, height: 30, colorFilter: const ColorFilter.mode(AppColors.primary, BlendMode.srcIn)),
@@ -202,7 +202,7 @@ class _Row extends ConsumerWidget {
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.card,
               borderRadius: BorderRadius.circular(AppRadius.cover),
               border: Border.all(color: AppColors.border),
             ),
@@ -228,7 +228,7 @@ class _Row extends ConsumerWidget {
                     if (rating > 0) ...[
                       const SizedBox(width: 8),
                       Text(rating.toStringAsFixed(1),
-                          style: AppText.grotesk(13, weight: FontWeight.w700, color: const Color(0xFF672BF4))),
+                          style: AppText.grotesk(13, weight: FontWeight.w700, color: AppColors.accent)),
                     ],
                   ]),
                 ]),

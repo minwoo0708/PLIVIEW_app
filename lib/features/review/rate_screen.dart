@@ -311,13 +311,13 @@ class _RateScreenState extends ConsumerState<RateScreen> {
         width: double.infinity,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.card,
           borderRadius: BorderRadius.circular(AppRadius.cover),
           border: Border.all(color: AppColors.border),
         ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
-            Text('한 줄 평', style: AppText.gothic(11, weight: FontWeight.w600, color: AppColors.primary)),
+            Text('한 줄 평', style: AppText.gothic(11, weight: FontWeight.w600, color: AppColors.accent)),
             const Spacer(),
             Text('${_comment.text.characters.length}/200', style: AppText.grotesk(11, color: AppColors.textSecondary)),
           ]),
@@ -367,7 +367,7 @@ class _RateScreenState extends ConsumerState<RateScreen> {
         height: 44,
         padding: const EdgeInsets.symmetric(horizontal: 14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.card,
           borderRadius: BorderRadius.circular(AppRadius.pill),
           border: Border.all(color: AppColors.border),
         ),
@@ -398,7 +398,7 @@ class _RateScreenState extends ConsumerState<RateScreen> {
         Container(
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.card,
             borderRadius: BorderRadius.circular(AppRadius.card),
             border: Border.all(color: AppColors.border),
           ),
@@ -467,7 +467,7 @@ class _RateScreenState extends ConsumerState<RateScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.card,
           borderRadius: BorderRadius.circular(AppRadius.cover),
           border: Border.all(color: value == null ? AppColors.border : AppColors.primary),
         ),
@@ -482,7 +482,7 @@ class _RateScreenState extends ConsumerState<RateScreen> {
               overflow: TextOverflow.ellipsis,
               style: value == null
                   ? AppText.gothic(13, color: AppColors.textSecondary)
-                  : AppText.mixed(13, weight: FontWeight.w700, color: AppColors.primary),
+                  : AppText.mixed(13, weight: FontWeight.w700, color: AppColors.accent),
             ),
           ),
         ]),
@@ -496,13 +496,13 @@ class _RateScreenState extends ConsumerState<RateScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.card,
         borderRadius: BorderRadius.circular(AppRadius.cover),
         border: Border.all(color: AppColors.border),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          Text(label, style: AppText.gothic(11, weight: FontWeight.w600, color: AppColors.primary)),
+          Text(label, style: AppText.gothic(11, weight: FontWeight.w600, color: AppColors.accent)),
           const Spacer(),
           Text('${c.text.characters.length}/$maxLength', style: AppText.grotesk(11, color: AppColors.textSecondary)),
         ]),

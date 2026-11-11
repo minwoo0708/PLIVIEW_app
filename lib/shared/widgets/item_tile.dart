@@ -91,7 +91,7 @@ class ItemRow extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.card,
           borderRadius: BorderRadius.circular(AppRadius.cover),
           border: Border.all(color: AppColors.border),
         ),
@@ -121,7 +121,7 @@ class ItemRow extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
                 decoration: BoxDecoration(color: AppColors.chip, borderRadius: BorderRadius.circular(AppRadius.pill)),
                 child: Text('★ ${rating!.toStringAsFixed(1)}',
-                    style: AppText.mixed(12, weight: FontWeight.w700, color: AppColors.primary)),
+                    style: AppText.mixed(12, weight: FontWeight.w700, color: AppColors.accent)),
               ),
             ],
           ],

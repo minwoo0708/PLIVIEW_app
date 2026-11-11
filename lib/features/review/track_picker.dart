@@ -115,7 +115,7 @@ class _TrackPickerSheetState extends ConsumerState<_TrackPickerSheet> {
                 height: 46,
                 padding: const EdgeInsets.symmetric(horizontal: 14),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.card,
                   borderRadius: BorderRadius.circular(AppRadius.pill),
                   border: Border.all(color: AppColors.border),
                 ),
@@ -158,7 +158,7 @@ class _TrackPickerSheetState extends ConsumerState<_TrackPickerSheet> {
                                 child: Container(
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: AppColors.card,
                                     borderRadius: BorderRadius.circular(AppRadius.scoreButton),
                                     border: Border.all(color: AppColors.border),
                                   ),
@@ -167,7 +167,7 @@ class _TrackPickerSheetState extends ConsumerState<_TrackPickerSheet> {
                                       SizedBox(
                                         width: 24,
                                         child: Text('${i + 1}',
-                                            style: AppText.grotesk(13, weight: FontWeight.w500, color: AppColors.primary)),
+                                            style: AppText.grotesk(13, weight: FontWeight.w500, color: AppColors.accent)),
                                       )
                                     else ...[
                                       CoverImage(url: t.imageUrl, size: 40, radius: 10, seed: t.id),

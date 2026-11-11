@@ -169,7 +169,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.card,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(color: AppColors.border),
       ),
@@ -185,7 +185,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             child: Row(children: [
               SizedBox(
                 width: 28,
-                child: Text('★ $star', style: AppText.mixed(12, weight: FontWeight.w600, color: const Color(0xFF672BF4))),
+                child: Text('★ $star', style: AppText.mixed(12, weight: FontWeight.w600, color: AppColors.accent)),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -194,7 +194,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   return Stack(children: [
                     Container(
                       height: 8,
-                      decoration: BoxDecoration(color: const Color(0xFFE9E3FA), borderRadius: BorderRadius.circular(4)),
+                      decoration: BoxDecoration(color: AppColors.track, borderRadius: BorderRadius.circular(4)),
                     ),
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
@@ -230,7 +230,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.card,
               borderRadius: BorderRadius.circular(AppRadius.cover),
               border: Border.all(color: AppColors.border),
             ),
@@ -239,7 +239,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               SizedBox(
                 width: 36,
                 child: Text(r.rating.toStringAsFixed(1),
-                    style: AppText.grotesk(16, weight: FontWeight.w700, color: AppColors.primary)),
+                    style: AppText.grotesk(16, weight: FontWeight.w700, color: AppColors.accent)),
               ),
               CoverImage(url: r.item.imageUrl, size: 52, radius: AppRadius.scoreButton, seed: r.spotifyId),
               const SizedBox(width: 12),
@@ -368,7 +368,7 @@ class _StarSheet extends ConsumerWidget {
             child: Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.card,
                 borderRadius: BorderRadius.circular(AppRadius.cover),
                 border: Border.all(color: AppColors.border),
               ),
@@ -389,7 +389,7 @@ class _StarSheet extends ConsumerWidget {
                   ]),
                 ),
                 Text(r.rating.toStringAsFixed(1),
-                    style: AppText.grotesk(14, weight: FontWeight.w700, color: AppColors.primary)),
+                    style: AppText.grotesk(14, weight: FontWeight.w700, color: AppColors.accent)),
               ]),
             ),
           ),

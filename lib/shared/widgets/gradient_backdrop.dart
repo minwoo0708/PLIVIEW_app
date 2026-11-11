@@ -18,7 +18,7 @@ class GradientBackdrop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      const Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(gradient: AppColors.screenGradient))),
+      Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(gradient: AppColors.screenGradient))),
       const Positioned.fill(child: IgnorePointer(child: _NoiseOverlay())),
       Positioned.fill(child: child),
     ]);
@@ -134,7 +134,8 @@ class _AdaptiveColorState extends State<AdaptiveColor> {
     final y = box.localToGlobal(Offset.zero).dy;
     final h = MediaQuery.sizeOf(context).height;
     // 화면 높이의 55%까지는 흰색, 62% 아래로는 어두운색, 그 사이는 섞어요.
-    final t = ((y / h - 0.55) / 0.07).clamp(0.0, 1.0);
+    // 다크모드는 바닥까지 어두워서 늘 밝은 글자를 써요.
+    final t = AppColors.isDark ? 0.0 : ((y / h - 0.55) / 0.07).clamp(0.0, 1.0);
     if ((t - _t).abs() > 0.02) setState(() => _t = t);
   }
 

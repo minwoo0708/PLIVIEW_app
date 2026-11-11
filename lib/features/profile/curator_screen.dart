@@ -91,11 +91,11 @@ class _Header extends StatelessWidget {
     Widget metric(String label, String value) => Expanded(
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 12),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(AppRadius.scoreButton)),
+            decoration: BoxDecoration(color: AppColors.card, borderRadius: BorderRadius.circular(AppRadius.scoreButton)),
             child: Column(children: [
               Text(label, style: AppText.gothic(11, weight: FontWeight.w500, color: AppColors.textSecondary)),
               const SizedBox(height: 2),
-              Text(value, style: AppText.display(20, color: AppColors.primary)),
+              Text(value, style: AppText.display(20, color: AppColors.accent)),
             ]),
           ),
         );

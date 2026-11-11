@@ -42,7 +42,7 @@ class ReviewCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.card,
           borderRadius: BorderRadius.circular(AppRadius.totalBar),
           border: Border.all(color: AppColors.border),
         ),
@@ -85,7 +85,7 @@ class ReviewCard extends StatelessWidget {
               StarRating(value: r.rating, size: 14, gap: 1),
               const SizedBox(width: 6),
               Text(r.rating.toStringAsFixed(1),
-                  style: AppText.mixed(13, weight: FontWeight.w700, color: AppColors.primary)),
+                  style: AppText.mixed(13, weight: FontWeight.w700, color: AppColors.accent)),
             ]),
             if (r.comment != null && r.comment!.isNotEmpty) ...[
               const SizedBox(height: 10),
@@ -107,7 +107,7 @@ class ReviewCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(color: AppColors.chip, borderRadius: BorderRadius.circular(AppRadius.pill)),
-                    child: Text('#$t', style: AppText.gothic(12, weight: FontWeight.w600, color: AppColors.primary)),
+                    child: Text('#$t', style: AppText.gothic(12, weight: FontWeight.w600, color: AppColors.accent)),
                   ),
               ]),
             ],
@@ -141,7 +141,7 @@ class ReviewCard extends StatelessWidget {
     Widget line(String label, String value) => Padding(
           padding: const EdgeInsets.only(bottom: 4),
           child: Text.rich(TextSpan(children: [
-            TextSpan(text: '$label  ', style: AppText.gothic(12, weight: FontWeight.w700, color: AppColors.primary)),
+            TextSpan(text: '$label  ', style: AppText.gothic(12, weight: FontWeight.w700, color: AppColors.accent)),
             TextSpan(text: value, style: AppText.mixed(13, weight: FontWeight.w600, color: AppColors.textPrimary)),
           ])),
         );
@@ -177,19 +177,19 @@ class ReviewCard extends StatelessWidget {
   Widget _typeChip(ItemType type) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
         decoration: BoxDecoration(color: AppColors.chip, borderRadius: BorderRadius.circular(AppRadius.pill)),
-        child: Text(type.label, style: AppText.gothic(11, weight: FontWeight.w700, color: AppColors.primary)),
+        child: Text(type.label, style: AppText.gothic(11, weight: FontWeight.w700, color: AppColors.accent)),
       );
 
   Widget _scoreChip(String label, double v) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.card,
           borderRadius: BorderRadius.circular(AppRadius.pill),
           border: Border.all(color: AppColors.border),
         ),
         child: Text.rich(TextSpan(children: [
           TextSpan(text: '$label ', style: AppText.gothic(11, color: AppColors.textSecondary)),
-          TextSpan(text: v.toStringAsFixed(1), style: AppText.mixed(11, weight: FontWeight.w700, color: AppColors.primary)),
+          TextSpan(text: v.toStringAsFixed(1), style: AppText.mixed(11, weight: FontWeight.w700, color: AppColors.accent)),
         ])),
       );
 

@@ -59,7 +59,7 @@ class StartScreen extends StatelessWidget {
                             const TextSpan(text: '이미 계정이 있나요? '),
                             TextSpan(
                               text: '로그인',
-                              style: AppText.gothic(14, weight: FontWeight.w800, color: AppColors.primary),
+                              style: AppText.gothic(14, weight: FontWeight.w800, color: AppColors.accent),
                             ),
                           ],
                         ),

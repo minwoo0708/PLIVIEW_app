@@ -188,7 +188,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   Widget _searchBox() => Container(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         height: 52,
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(AppRadius.cover)),
+        decoration: BoxDecoration(color: AppColors.card, borderRadius: BorderRadius.circular(AppRadius.cover)),
         child: Row(children: [
           SvgPicture.asset('assets/images/icon_search_purple.svg', width: 20, height: 20),
           const SizedBox(width: 10),
@@ -217,7 +217,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 _controller.clear();
                 _startSearch('');
               },
-              child: const Icon(Icons.close_rounded, size: 20, color: AppColors.textSecondary),
+              child: Icon(Icons.close_rounded, size: 20, color: AppColors.textSecondary),
             ),
         ]),
       );
