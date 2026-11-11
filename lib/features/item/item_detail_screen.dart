@@ -137,7 +137,7 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
                       padding: EdgeInsets.fromLTRB(20, 0, 20, bottomInset + (_isPlaylist ? 110 : 32)),
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                         if (widget.kind == 'album' && item.tracks.isNotEmpty) ..._trackList(item.tracks),
-                        if (_isPlaylist) ..._playlistTrackSection(),
+                        if (_isPlaylist) ..._playlistOpenSection(item),
                         const SizedBox(height: 22),
                         _reviewsSection(item),
                       ]),
@@ -299,30 +299,26 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
           child: SizedBox(height: 46, child: child),
         ),
       );
-  /// 플리 수록곡 섹션: 불러오는 중, 불러올 수 없음(비공개·공식 플리), 곡 목록 세 가지 상태를 보여 줘요.
-  List<Widget> _playlistTrackSection() {
-    final tracks = ref.watch(playlistTracksProvider(widget.id));
-    return tracks.when(
-      loading: () => const [
-        SizedBox(height: 18),
-        Center(child: Padding(padding: EdgeInsets.all(16), child: CircularProgressIndicator(color: AppColors.primary))),
-      ],
-      error: (e, _) => [
+  /// 플리 곡 목록은 Spotify 정책상 앱이 받을 수 없어서, 원본 플리를 Spotify에서 열도록 안내해요.
+  List<Widget> _playlistOpenSection(SpotifyItem item) => [
         const SizedBox(height: 18),
         Text('수록곡', style: AppText.gothic(16, weight: FontWeight.w800, color: AppColors.textPrimary)),
-        const SizedBox(height: 8),
-        Text(
-          e is ApiException && (e.status == 403 || e.status == 404)
-              ? '불러올 수 없는 플리예요. 비공개이거나 Spotify 공식 플리일 수 있어요.'
-              : (e is ApiException ? e.userMessage : '수록곡을 불러올 수 없어요.'),
-          style: AppText.gothic(13, color: AppColors.textSecondary),
+        const SizedBox(height: 4),
+        Text('플리의 곡 목록은 Spotify에서 볼 수 있어요', style: AppText.gothic(12, color: AppColors.textSecondary)),
+        const SizedBox(height: 10),
+        _pill(
+          color: AppColors.spotifyGreen,
+          onTap: () => _openSpotify(item),
+          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            SvgPicture.asset('assets/images/spotify_logo.svg', width: 20, height: 20),
+            const SizedBox(width: 8),
+            Text.rich(TextSpan(children: [
+              TextSpan(text: 'Spotify', style: AppText.grotesk(13, weight: FontWeight.w500, color: const Color(0xFF0B0B0B))),
+              TextSpan(text: '에서 열기', style: AppText.gothic(13, weight: FontWeight.w600, color: const Color(0xFF0B0B0B))),
+            ])),
+          ]),
         ),
-        TextButton(onPressed: () => ref.invalidate(playlistTracksProvider(widget.id)), child: const Text('다시 시도')),
-      ],
-      data: (list) => list.isEmpty ? const [] : _trackList(list),
-    );
-  }
-
+      ];
 
   List<Widget> _trackList(List<SpotifyItem> tracks) {
     // 수록곡 평점은 서버에서 한 번에 받아요.
