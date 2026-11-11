@@ -9,6 +9,7 @@ import '../../core/models/stats.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
+import '../../shared/widgets/gradient_backdrop.dart';
 import '../../shared/widgets/item_tile.dart';
 import '../../shared/widgets/review_card.dart';
 import 'home_providers.dart';
@@ -40,28 +41,15 @@ class HomeScreen extends ConsumerWidget {
     final weeklyPlaylists = ref.watch(weeklyPlaylistsProvider).asData?.value ?? const [];
     final bottom = MediaQuery.paddingOf(context).bottom + 110;
 
-    return Container(
-      color: AppColors.surface,
+    return GradientBackdrop(
       child: SafeArea(
         bottom: false,
         child: RefreshIndicator(
           color: AppColors.primary,
           onRefresh: () => _refresh(ref),
           child: ListView(
-            padding: EdgeInsets.zero,
+            padding: EdgeInsets.fromLTRB(20, 8, 20, bottom),
             children: [
-              // 위쪽 보라 배경은 내용과 함께 스크롤돼서, 아래로 내려도 제목이 묻히지 않아요.
-              Stack(children: [
-                const Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: 720,
-                  child: DecoratedBox(decoration: BoxDecoration(gradient: AppColors.homeGradient)),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(20, 8, 20, bottom),
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
               Text('안녕하세요, ${user?.nickname ?? ''}님',
                   style: AppText.gothic(13, weight: FontWeight.w500, color: AppColors.white70)),
               const SizedBox(height: 4),
@@ -121,26 +109,27 @@ class HomeScreen extends ConsumerWidget {
                           ),
                       ]),
               ),
-            ]),
-                  ),
-                ]),
-              ],
+            ],
             ),
         ),
       ),
     );
   }
 
-  Widget _section(String title, {VoidCallback? onMore}) => Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(title, style: AppText.gothic(17, weight: FontWeight.w800, color: AppColors.textPrimary).copyWith(letterSpacing: -0.17)),
-          if (onMore != null)
-            GestureDetector(
-              onTap: onMore,
-              child: Text('더보기', style: AppText.gothic(12, weight: FontWeight.w500, color: AppColors.primary)),
-            ),
-        ],
+  Widget _section(String title, {VoidCallback? onMore}) => AdaptiveColor(
+        onDark: Colors.white,
+        onLight: AppColors.textPrimary,
+        builder: (_, color) => Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(title, style: AppText.gothic(17, weight: FontWeight.w800, color: color).copyWith(letterSpacing: -0.17)),
+            if (onMore != null)
+              GestureDetector(
+                onTap: onMore,
+                child: Text('더보기', style: AppText.gothic(12, weight: FontWeight.w500, color: color)),
+              ),
+          ],
+        ),
       );
 }
 

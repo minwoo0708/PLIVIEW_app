@@ -9,6 +9,7 @@ import '../../core/models/review.dart';
 import '../../core/models/spotify_item.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
+import '../../shared/widgets/gradient_backdrop.dart';
 import '../../shared/widgets/cover_image.dart';
 import '../item/item_providers.dart' show typeOfKind;
 import '../../shared/widgets/star_rating.dart';
@@ -190,15 +191,7 @@ class _RateScreenState extends ConsumerState<RateScreen> {
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: const [AppColors.ink, AppColors.inkMid, AppColors.surface, AppColors.surface],
-            stops: _isPlaylist ? const [0, 0.26, 0.40, 1] : const [0, 0.30, 0.46, 1],
-          ),
-        ),
+      body: GradientBackdrop(
         child: SafeArea(
           bottom: false,
           child: Stack(children: [

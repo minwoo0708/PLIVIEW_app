@@ -8,6 +8,7 @@ import '../../core/models/spotify_item.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
+import '../../shared/widgets/gradient_backdrop.dart';
 import '../../shared/widgets/brand_chip.dart';
 import '../../shared/widgets/item_tile.dart';
 
@@ -26,15 +27,7 @@ class ArtistScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final albums = ref.watch(_artistAlbumsProvider(id));
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [AppColors.ink, AppColors.inkMid, AppColors.surface, AppColors.surface],
-            stops: [0, 0.2, 0.34, 1],
-          ),
-        ),
+      body: GradientBackdrop(
         child: SafeArea(
           bottom: false,
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

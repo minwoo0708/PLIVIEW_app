@@ -8,6 +8,7 @@ import '../../core/models/stats.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
+import '../../shared/widgets/gradient_backdrop.dart';
 import '../../shared/widgets/avatar.dart';
 import '../../shared/widgets/brand_chip.dart';
 import 'profile_providers.dart';
@@ -20,15 +21,7 @@ class RankingScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final ranking = ref.watch(curatorRankingProvider);
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [AppColors.ink, AppColors.inkMid, AppColors.surface, AppColors.surface],
-            stops: [0, 0.50, 0.68, 1],
-          ),
-        ),
+      body: GradientBackdrop(
         child: SafeArea(
           bottom: false,
           child: ListView(

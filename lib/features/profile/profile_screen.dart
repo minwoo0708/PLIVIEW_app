@@ -10,6 +10,7 @@ import '../../core/models/stats.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
+import '../../shared/widgets/gradient_backdrop.dart';
 import '../../shared/widgets/avatar.dart';
 import '../../shared/widgets/cover_image.dart';
 import 'profile_providers.dart';
@@ -32,8 +33,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final data = ref.watch(profileProvider(me.id));
     final bottom = MediaQuery.paddingOf(context).bottom + 110;
 
-    return Container(
-      color: AppColors.surface,
+    return GradientBackdrop(
       child: SafeArea(
         bottom: false,
         child: Stack(children: [
@@ -44,29 +44,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               await ref.read(profileProvider(me.id).future);
             },
             child: ListView(
-              padding: EdgeInsets.zero,
+              padding: EdgeInsets.fromLTRB(20, 8, 20, bottom),
               children: [
-                // 위쪽 보라 배경은 내용과 함께 스크롤돼서, 위로 올려도 글자가 묻히지 않아요.
-                Stack(children: [
-                  const Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: 640,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [AppColors.ink, AppColors.inkMid, AppColors.surface],
-                          stops: [0, 0.6, 1],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(20, 8, 20, bottom),
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                 Center(child: Avatar(nickname: me.nickname, imageUrl: me.profileImageUrl, size: 88, border: true)),
                 const SizedBox(height: 14),
                 Center(child: Text(me.nickname, style: AppText.display(24))),
@@ -89,9 +68,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ),
                   data: (d) => _content(d),
                 ),
-                    ]),
-                  ),
-                ]),
               ],
             ),
           ),
@@ -142,15 +118,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       const SizedBox(height: 14),
       _habitCard(stats),
       const SizedBox(height: 14),
-      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text('최근에 남긴 평가', style: AppText.gothic(15, weight: FontWeight.w800, color: AppColors.textPrimary)),
-        if (reviews.length > 5)
-          GestureDetector(
-            onTap: () => setState(() => _showAll = !_showAll),
-            child: Text(_showAll ? '접기' : '모두 보기',
-                style: AppText.gothic(12, weight: FontWeight.w500, color: AppColors.primary)),
-          ),
-      ]),
+      AdaptiveColor(
+        onDark: Colors.white,
+        onLight: AppColors.textPrimary,
+        builder: (_, color) => Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Text('최근에 남긴 평가', style: AppText.gothic(15, weight: FontWeight.w800, color: color)),
+          if (reviews.length > 5)
+            GestureDetector(
+              onTap: () => setState(() => _showAll = !_showAll),
+              child: Text(_showAll ? '접기' : '모두 보기', style: AppText.gothic(12, weight: FontWeight.w500, color: color)),
+            ),
+        ]),
+      ),
       const SizedBox(height: 12),
       if (reviews.isEmpty)
         Padding(
