@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
 import 'cover_image.dart';
+import 'gradient_backdrop.dart';
 
 /// 2열 그리드용 타일: 커버(정사각형) + 제목 + 보조 글자.
 class ItemTile extends StatelessWidget {
@@ -34,18 +35,27 @@ class ItemTile extends StatelessWidget {
           children: [
             CoverImage(url: imageUrl, size: c.maxWidth, seed: id, ratingBadge: rating),
             const SizedBox(height: 6),
-            Text(
-              title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: AppText.mixed(14, weight: FontWeight.w800, color: AppColors.textPrimary),
+            // 화면 위쪽(진한 배경)에서는 흰 글자, 아래쪽(연한 배경)에서는 어두운 글자로 바뀌어요.
+            AdaptiveColor(
+              onDark: Colors.white,
+              onLight: AppColors.textPrimary,
+              builder: (_, color) => Text(
+                title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: AppText.mixed(14, weight: FontWeight.w800, color: color),
+              ),
             ),
             if (subtitle != null && subtitle!.isNotEmpty)
-              Text(
-                subtitle!,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppText.mixed(12, color: AppColors.textSecondary),
+              AdaptiveColor(
+                onDark: const Color(0xC7FFFFFF),
+                onLight: AppColors.textSecondary,
+                builder: (_, color) => Text(
+                  subtitle!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppText.mixed(12, color: color),
+                ),
               ),
           ],
         ),
