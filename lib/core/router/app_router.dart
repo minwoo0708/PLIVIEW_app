@@ -12,6 +12,7 @@ import '../../features/home/top_rated_screen.dart';
 import '../../features/item/item_providers.dart' show typeOfKind;
 import '../../features/item/artist_screen.dart';
 import '../../features/item/item_detail_screen.dart';
+import '../../features/playlist_maker/playlist_maker_screen.dart';
 import '../../features/profile/curator_screen.dart';
 import '../../features/profile/profile_screen.dart';
 import '../../features/profile/ranking_screen.dart';
@@ -33,6 +34,7 @@ abstract final class Routes {
   static const me = '/me';
   static const rate = '/rate';
   static const settings = '/settings';
+  static const makePlaylist = '/make-playlist';
   static const ranking = '/ranking';
 
   /// 홈 "더보기": 평점 높은 앨범/플리 목록. kind는 album 또는 playlist.
@@ -95,6 +97,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, s) => RateScreen(args: s.extra! as RateArgs),
       ),
       GoRoute(path: Routes.settings, builder: (_, _) => const SettingsScreen()),
+      GoRoute(path: Routes.makePlaylist, builder: (_, _) => const PlaylistMakerScreen()),
       GoRoute(path: Routes.ranking, builder: (_, _) => const RankingScreen()),
       GoRoute(
         path: '/top/:kind',

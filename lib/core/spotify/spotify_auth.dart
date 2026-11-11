@@ -19,7 +19,12 @@ class SpotifyAuth {
 
   static const clientId = '120ed05f019a4d0791e7e90e300256e3';
   static const redirectUrl = 'pliview://callback';
-  static const scopes = ['user-read-recently-played'];
+  /// 최근 재생 읽기 + 취향 플리 만들기(비공개/공개)에 필요한 권한.
+  static const scopes = [
+    'user-read-recently-played',
+    'playlist-modify-private',
+    'playlist-modify-public',
+  ];
 
   static const _config = AuthorizationServiceConfiguration(
     authorizationEndpoint: 'https://accounts.spotify.com/authorize',
