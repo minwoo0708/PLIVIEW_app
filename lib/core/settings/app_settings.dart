@@ -20,6 +20,8 @@ class AppSettings {
   final ThemeMode themeMode;
   final double textScale;
 
+  bool get isDefault => themeMode == ThemeMode.system && (textScale - 1.0).abs() < 0.001;
+
   AppSettings copyWith({ThemeMode? themeMode, double? textScale}) =>
       AppSettings(themeMode: themeMode ?? this.themeMode, textScale: textScale ?? this.textScale);
 
@@ -77,14 +79,21 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
     _pushToServer();
   }
 
-  /// 로그인하면 서버에 저장된 설정을 받아 기기에 맞춰요. 서버에 아직 API가 없거나 실패하면 기기 값을 그대로 써요.
+  /// 로그인하면 서버에 저장된 설정과 맞춰요.
+  /// - 서버에 저장된 값이 기본값이 아니면 서버 값을 따라요(다른 기기에서 바꾼 설정 이어받기).
+  /// - 서버가 기본값인데 이 기기에서 바꿔 둔 게 있으면, 기기 값을 서버에 올려요.
+  /// - 서버 API가 실패해도 기기 저장만으로 동작해요.
   Future<void> pullFromServer() async {
     try {
       final server = AppSettings.fromServer(await ref.read(apiClientProvider).get('/api/users/me/settings'));
       if (server == null) return;
-      state = server;
-      await _prefs.setString(_kTheme, server.themeMode.name);
-      await _prefs.setDouble(_kScale, server.textScale);
+      if (!server.isDefault) {
+        state = server;
+        await _prefs.setString(_kTheme, server.themeMode.name);
+        await _prefs.setDouble(_kScale, server.textScale);
+      } else if (!state.isDefault) {
+        await _pushToServer();
+      }
     } catch (_) {
       // 서버 API가 없어도(404) 앱은 기기 저장만으로 동작해요.
     }

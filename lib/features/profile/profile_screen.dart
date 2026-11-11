@@ -184,7 +184,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             padding: const EdgeInsets.only(bottom: 10),
             child: Row(children: [
               SizedBox(
-                width: 28,
+                width: MediaQuery.textScalerOf(context).scale(30),
                 child: Text('★ $star', style: AppText.mixed(12, weight: FontWeight.w600, color: AppColors.accent)),
               ),
               const SizedBox(width: 10),
@@ -210,7 +210,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ),
               const SizedBox(width: 10),
               SizedBox(
-                width: 24,
+                width: MediaQuery.textScalerOf(context).scale(26),
                 child: Text('${buckets[star]}',
                     textAlign: TextAlign.right,
                     style: AppText.grotesk(12, weight: FontWeight.w500, color: AppColors.textSecondary)),
