@@ -9,6 +9,7 @@ import '../../core/models/stats.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
+import '../../shared/widgets/skeleton.dart';
 import '../../shared/widgets/gradient_backdrop.dart';
 import '../../shared/widgets/item_tile.dart';
 import '../../shared/widgets/review_card.dart';
@@ -66,7 +67,7 @@ class HomeScreen extends ConsumerWidget {
               _section('지금 많이 듣는 앨범', onMore: () => context.push(Routes.topRated('album'))),
               const SizedBox(height: 14),
               popular.when(
-                loading: () => const _Loading(),
+                loading: () => const SkeletonGrid(),
                 error: (e, _) => _ErrorText(e, onRetry: () => ref.invalidate(popularAlbumsProvider)),
                 data: (list) => list.isEmpty
                     ? const _Empty('아직 리뷰가 없어요.\n탐색에서 앨범을 찾아 첫 리뷰를 남겨 보세요!')
@@ -76,7 +77,7 @@ class HomeScreen extends ConsumerWidget {
               _section('지금 많이 듣는 플리', onMore: () => context.push(Routes.topRated('playlist'))),
               const SizedBox(height: 14),
               popularPlaylists.when(
-                loading: () => const _Loading(),
+                loading: () => const SkeletonGrid(),
                 error: (e, _) => _ErrorText(e, onRetry: () => ref.invalidate(popularPlaylistsProvider)),
                 data: (list) => list.isEmpty
                     ? const _Empty('아직 평가된 플리가 없어요.\n탐색에서 플리를 찾아 첫 리뷰를 남겨 보세요!')
@@ -93,7 +94,7 @@ class HomeScreen extends ConsumerWidget {
               _section('최신 리뷰'),
               const SizedBox(height: 14),
               feed.when(
-                loading: () => const _Loading(),
+                loading: () => const SkeletonRows(count: 3),
                 error: (e, _) => _ErrorText(e, onRetry: () => ref.invalidate(feedProvider)),
                 data: (list) => list.isEmpty
                     ? const _Empty('아직 올라온 리뷰가 없어요.')
@@ -231,15 +232,6 @@ class _AlbumGrid extends StatelessWidget {
   }
 }
 
-class _Loading extends StatelessWidget {
-  const _Loading();
-
-  @override
-  Widget build(BuildContext context) => const Padding(
-        padding: EdgeInsets.all(24),
-        child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
-      );
-}
 
 class _Empty extends StatelessWidget {
   const _Empty(this.text);

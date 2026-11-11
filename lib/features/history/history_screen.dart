@@ -8,6 +8,7 @@ import '../../core/router/app_router.dart';
 import '../../core/spotify/spotify_auth.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
+import '../../shared/widgets/skeleton.dart';
 import '../../shared/widgets/gradient_backdrop.dart';
 import '../../shared/widgets/cover_image.dart';
 import '../../shared/widgets/primary_button.dart';
@@ -123,7 +124,7 @@ class _PlayedList extends ConsumerWidget {
     final played = ref.watch(recentlyPlayedProvider);
     final bottom = MediaQuery.paddingOf(context).bottom + 110;
     return played.when(
-      loading: () => const Center(child: CircularProgressIndicator(color: AppColors.lavender)),
+      loading: () => const Padding(padding: EdgeInsets.only(left: 52), child: SkeletonRows(count: 5, coverSize: 84)),
       error: (e, _) => Center(
         child: Padding(
           padding: EdgeInsets.fromLTRB(16, 0, 16, bottom),

@@ -11,6 +11,7 @@ import '../../core/spotify/spotify_auth.dart';
 import '../../core/spotify/spotify_user_api.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
+import '../../shared/widgets/skeleton.dart';
 import '../../shared/widgets/brand_chip.dart';
 import '../../shared/widgets/cover_image.dart';
 import '../../shared/widgets/gradient_backdrop.dart';
@@ -146,10 +147,7 @@ class _PlaylistMakerScreenState extends ConsumerState<PlaylistMakerScreen> {
                 const SizedBox.shrink()
               else
                 reviews.when(
-                  loading: () => const Padding(
-                    padding: EdgeInsets.all(40),
-                    child: Center(child: CircularProgressIndicator(color: AppColors.lavender)),
-                  ),
+                  loading: () => const SkeletonRows(count: 5),
                   error: (e, _) => _notice(e is ApiException ? e.userMessage : '리뷰를 불러올 수 없어요.'),
                   data: (all) {
                     final tracks = all.where((r) => r.type == ItemType.track).toList();

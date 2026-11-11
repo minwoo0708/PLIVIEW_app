@@ -10,6 +10,7 @@ import '../../core/models/stats.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
+import '../../shared/widgets/skeleton.dart';
 import '../../shared/widgets/gradient_backdrop.dart';
 import '../../shared/widgets/avatar.dart';
 import '../../shared/widgets/cover_image.dart';
@@ -54,10 +55,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   Center(child: Text(me.email!, style: AppText.grotesk(12, color: AppColors.white70))),
                 const SizedBox(height: 14),
                 data.when(
-                  loading: () => const Padding(
-                    padding: EdgeInsets.all(40),
-                    child: Center(child: CircularProgressIndicator(color: AppColors.lavender)),
-                  ),
+                  loading: () => const SkeletonProfile(),
                   error: (e, _) => Padding(
                     padding: const EdgeInsets.all(24),
                     child: Column(children: [
@@ -323,7 +321,7 @@ class _StarSheet extends ConsumerWidget {
         ),
         Expanded(
           child: all.when(
-            loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+            loading: () => const Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: SkeletonRows(count: 4)),
             error: (e, _) => Center(
               child: Text(e is ApiException ? e.userMessage : '불러올 수 없어요.',
                   style: AppText.gothic(14, color: AppColors.textSecondary)),
