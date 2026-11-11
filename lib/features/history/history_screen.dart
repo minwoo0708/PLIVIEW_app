@@ -209,35 +209,33 @@ class _Row extends ConsumerWidget {
               borderRadius: BorderRadius.circular(AppRadius.cover),
               border: Border.all(color: AppColors.border),
             ),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Row(children: [
-                CoverImage(url: t.imageUrl, size: 44, radius: 10, seed: t.id),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(t.name,
+            child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+              // 표지는 크게, 오른쪽에 제목 → 가수 → 별점 순으로 쌓아요.
+              CoverImage(url: t.imageUrl, size: 84, radius: 14, seed: t.id),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(t.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppText.mixed(14, weight: FontWeight.w800, color: AppColors.textPrimary)),
+                  if (t.subtitle != null)
+                    Text(t.subtitle!,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: AppText.mixed(14, weight: FontWeight.w800, color: AppColors.textPrimary)),
-                    if (t.subtitle != null)
-                      Text(t.subtitle!,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppText.mixed(12, color: AppColors.textSecondary)),
+                        style: AppText.mixed(12, color: AppColors.textSecondary)),
+                  const SizedBox(height: 10),
+                  Row(children: [
+                    StarPicker(value: rating, size: 20, gap: 3, onChanged: (v) => _rate(context, ref, v)),
+                    // 평가한 곡만 점수를 보여 주고, 아직이면 아무 문구도 두지 않아요.
+                    if (rating > 0) ...[
+                      const SizedBox(width: 8),
+                      Text(rating.toStringAsFixed(1),
+                          style: AppText.grotesk(13, weight: FontWeight.w700, color: const Color(0xFF672BF4))),
+                    ],
                   ]),
-                ),
-              ]),
-              const SizedBox(height: 10),
-              Row(children: [
-                StarPicker(value: rating, onChanged: (v) => _rate(context, ref, v)),
-                const SizedBox(width: 8),
-                Text(
-                  rating == 0 ? '탭해서 평가' : rating.toStringAsFixed(1),
-                  style: rating == 0
-                      ? AppText.gothic(12, weight: FontWeight.w500, color: AppColors.textSecondary)
-                      : AppText.grotesk(13, weight: FontWeight.w700, color: const Color(0xFF672BF4)),
-                ),
-              ]),
+                ]),
+              ),
             ]),
           ),
         ),
