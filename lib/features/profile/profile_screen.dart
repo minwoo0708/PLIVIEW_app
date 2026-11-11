@@ -10,6 +10,7 @@ import '../../core/models/stats.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
+import '../../shared/widgets/skeleton.dart';
 import '../../shared/widgets/gradient_backdrop.dart';
 import '../../shared/widgets/avatar.dart';
 import '../../shared/widgets/cover_image.dart';
@@ -54,10 +55,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   Center(child: Text(me.email!, style: AppText.grotesk(12, color: AppColors.white70))),
                 const SizedBox(height: 14),
                 data.when(
-                  loading: () => const Padding(
-                    padding: EdgeInsets.all(40),
-                    child: Center(child: CircularProgressIndicator(color: AppColors.lavender)),
-                  ),
+                  loading: () => const SkeletonProfile(),
                   error: (e, _) => Padding(
                     padding: const EdgeInsets.all(24),
                     child: Column(children: [
@@ -169,7 +167,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.card,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(color: AppColors.border),
       ),
@@ -184,8 +182,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             padding: const EdgeInsets.only(bottom: 10),
             child: Row(children: [
               SizedBox(
-                width: 28,
-                child: Text('★ $star', style: AppText.mixed(12, weight: FontWeight.w600, color: const Color(0xFF672BF4))),
+                width: MediaQuery.textScalerOf(context).scale(30),
+                child: Text('★ $star', style: AppText.mixed(12, weight: FontWeight.w600, color: AppColors.accent)),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -194,7 +192,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   return Stack(children: [
                     Container(
                       height: 8,
-                      decoration: BoxDecoration(color: const Color(0xFFE9E3FA), borderRadius: BorderRadius.circular(4)),
+                      decoration: BoxDecoration(color: AppColors.track, borderRadius: BorderRadius.circular(4)),
                     ),
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
@@ -210,7 +208,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ),
               const SizedBox(width: 10),
               SizedBox(
-                width: 24,
+                width: MediaQuery.textScalerOf(context).scale(26),
                 child: Text('${buckets[star]}',
                     textAlign: TextAlign.right,
                     style: AppText.grotesk(12, weight: FontWeight.w500, color: AppColors.textSecondary)),
@@ -230,7 +228,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.card,
               borderRadius: BorderRadius.circular(AppRadius.cover),
               border: Border.all(color: AppColors.border),
             ),
@@ -239,7 +237,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               SizedBox(
                 width: 36,
                 child: Text(r.rating.toStringAsFixed(1),
-                    style: AppText.grotesk(16, weight: FontWeight.w700, color: AppColors.primary)),
+                    style: AppText.grotesk(16, weight: FontWeight.w700, color: AppColors.accent)),
               ),
               CoverImage(url: r.item.imageUrl, size: 52, radius: AppRadius.scoreButton, seed: r.spotifyId),
               const SizedBox(width: 12),
@@ -323,7 +321,7 @@ class _StarSheet extends ConsumerWidget {
         ),
         Expanded(
           child: all.when(
-            loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+            loading: () => const Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: SkeletonRows(count: 4)),
             error: (e, _) => Center(
               child: Text(e is ApiException ? e.userMessage : '불러올 수 없어요.',
                   style: AppText.gothic(14, color: AppColors.textSecondary)),
@@ -368,7 +366,7 @@ class _StarSheet extends ConsumerWidget {
             child: Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.card,
                 borderRadius: BorderRadius.circular(AppRadius.cover),
                 border: Border.all(color: AppColors.border),
               ),
@@ -389,7 +387,7 @@ class _StarSheet extends ConsumerWidget {
                   ]),
                 ),
                 Text(r.rating.toStringAsFixed(1),
-                    style: AppText.grotesk(14, weight: FontWeight.w700, color: AppColors.primary)),
+                    style: AppText.grotesk(14, weight: FontWeight.w700, color: AppColors.accent)),
               ]),
             ),
           ),

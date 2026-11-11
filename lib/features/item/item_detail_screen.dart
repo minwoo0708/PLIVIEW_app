@@ -12,6 +12,7 @@ import '../../core/models/stats.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
+import '../../shared/widgets/skeleton.dart';
 import '../../shared/widgets/gradient_backdrop.dart';
 import '../../shared/widgets/brand_chip.dart';
 import '../../shared/widgets/cover_image.dart';
@@ -61,7 +62,7 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('취소')),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('삭제', style: TextStyle(color: AppColors.errorOnLight)),
+            child: Text('삭제', style: TextStyle(color: AppColors.errorOnLight)),
           ),
         ],
       ),
@@ -86,10 +87,7 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
         child: SafeArea(
           bottom: false,
           child: itemAsync.when(
-            loading: () => Column(children: [
-                _topBar(),
-                const Expanded(child: Center(child: CircularProgressIndicator(color: AppColors.lavender))),
-              ]),
+            loading: () => const SkeletonDetail(),
             error: (e, _) => Column(children: [
                 _topBar(),
                 Expanded(child: _errorView(e)),
@@ -469,10 +467,7 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
       ]),
       const SizedBox(height: 12),
       reviews.when(
-        loading: () => const Padding(
-          padding: EdgeInsets.all(24),
-          child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
-        ),
+        loading: () => const SkeletonRows(count: 2),
         error: (e, _) => Padding(
           padding: const EdgeInsets.all(16),
           child: Text(e is ApiException ? e.userMessage : '리뷰를 불러올 수 없어요.',
@@ -527,14 +522,14 @@ class _TrackRow extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.card,
           borderRadius: BorderRadius.circular(AppRadius.scoreButton),
           border: Border.all(color: AppColors.border),
         ),
         child: Row(children: [
           SizedBox(
             width: 22,
-            child: Text('$number', style: AppText.grotesk(13, weight: FontWeight.w500, color: AppColors.primary)),
+            child: Text('$number', style: AppText.grotesk(13, weight: FontWeight.w500, color: AppColors.accent)),
           ),
           const SizedBox(width: 6),
           Expanded(
@@ -551,7 +546,7 @@ class _TrackRow extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
               decoration: BoxDecoration(color: AppColors.chip, borderRadius: BorderRadius.circular(AppRadius.pill)),
               child: Text('★ ${avg.toStringAsFixed(1)}',
-                  style: AppText.mixed(12, weight: FontWeight.w700, color: AppColors.primary)),
+                  style: AppText.mixed(12, weight: FontWeight.w700, color: AppColors.accent)),
             ),
           if (mine != null) ...[
             const SizedBox(width: 6),

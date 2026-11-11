@@ -12,6 +12,7 @@ import '../../core/models/spotify_item.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
+import '../../shared/widgets/skeleton.dart';
 import '../../shared/widgets/gradient_backdrop.dart';
 import '../../shared/widgets/item_tile.dart';
 
@@ -188,7 +189,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   Widget _searchBox() => Container(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         height: 52,
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(AppRadius.cover)),
+        decoration: BoxDecoration(color: AppColors.card, borderRadius: BorderRadius.circular(AppRadius.cover)),
         child: Row(children: [
           SvgPicture.asset('assets/images/icon_search_purple.svg', width: 20, height: 20),
           const SizedBox(width: 10),
@@ -217,7 +218,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 _controller.clear();
                 _startSearch('');
               },
-              child: const Icon(Icons.close_rounded, size: 20, color: AppColors.textSecondary),
+              child: Icon(Icons.close_rounded, size: 20, color: AppColors.textSecondary),
             ),
         ]),
       );
@@ -276,7 +277,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       return _message('곡, 앨범, 아티스트, 플리를 검색해 보세요');
     }
     if (_items.isEmpty && _loading) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: _kind == 'track' ? const SkeletonRows(count: 6) : const SkeletonGrid(rows: 3),
+      );
     }
     if (_items.isEmpty && _error != null) {
       return _message(_error!.userMessage, retry: () => _startSearch(_query));
@@ -285,10 +289,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
     final isTrack = _kind == 'track';
     final footer = _loading
-        ? const Padding(
-            padding: EdgeInsets.all(20),
-            child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
-          )
+        ? const SkeletonRows(count: 1)
         : const SizedBox.shrink();
 
     if (isTrack) {

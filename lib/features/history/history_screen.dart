@@ -8,6 +8,7 @@ import '../../core/router/app_router.dart';
 import '../../core/spotify/spotify_auth.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
+import '../../shared/widgets/skeleton.dart';
 import '../../shared/widgets/gradient_backdrop.dart';
 import '../../shared/widgets/cover_image.dart';
 import '../../shared/widgets/primary_button.dart';
@@ -74,7 +75,7 @@ class _ConnectGuideState extends ConsumerState<_ConnectGuide> {
           Container(
             width: 72,
             height: 72,
-            decoration: const BoxDecoration(color: AppColors.chip, shape: BoxShape.circle),
+            decoration: BoxDecoration(color: AppColors.chip, shape: BoxShape.circle),
             alignment: Alignment.center,
             child: SvgPicture.asset('assets/images/icon_clock.svg',
                 width: 30, height: 30, colorFilter: const ColorFilter.mode(AppColors.primary, BlendMode.srcIn)),
@@ -123,7 +124,7 @@ class _PlayedList extends ConsumerWidget {
     final played = ref.watch(recentlyPlayedProvider);
     final bottom = MediaQuery.paddingOf(context).bottom + 110;
     return played.when(
-      loading: () => const Center(child: CircularProgressIndicator(color: AppColors.lavender)),
+      loading: () => const Padding(padding: EdgeInsets.only(left: 52), child: SkeletonRows(count: 5, coverSize: 84)),
       error: (e, _) => Center(
         child: Padding(
           padding: EdgeInsets.fromLTRB(16, 0, 16, bottom),
@@ -202,7 +203,7 @@ class _Row extends ConsumerWidget {
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.card,
               borderRadius: BorderRadius.circular(AppRadius.cover),
               border: Border.all(color: AppColors.border),
             ),
@@ -228,7 +229,7 @@ class _Row extends ConsumerWidget {
                     if (rating > 0) ...[
                       const SizedBox(width: 8),
                       Text(rating.toStringAsFixed(1),
-                          style: AppText.grotesk(13, weight: FontWeight.w700, color: const Color(0xFF672BF4))),
+                          style: AppText.grotesk(13, weight: FontWeight.w700, color: AppColors.accent)),
                     ],
                   ]),
                 ]),

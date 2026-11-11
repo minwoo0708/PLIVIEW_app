@@ -8,6 +8,7 @@ import '../../core/api/api_exception.dart';
 import '../../core/auth/auth_controller.dart';
 import '../../core/models/user.dart';
 import '../../core/router/app_router.dart';
+import '../../core/settings/app_settings.dart';
 import '../../core/spotify/spotify_auth.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
@@ -128,6 +129,9 @@ class SettingsScreen extends ConsumerWidget {
               const SizedBox(height: 10),
               _row('비밀번호 변경', '현재 비밀번호 확인 후 변경', () => _changePassword(context, ref)),
               const SizedBox(height: 18),
+              _label('화면'),
+              _displayCard(context, ref),
+              const SizedBox(height: 18),
               _label('연동'),
               _row(
                 'Spotify 연동',
@@ -148,6 +152,54 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
+  /// 화면 설정: 다크모드(시스템/라이트/다크)와 글자 크기(4단계). 고르면 바로 적용되고 저장돼요.
+  Widget _displayCard(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(appSettingsProvider);
+    final notifier = ref.read(appSettingsProvider.notifier);
+    Widget chip(String label, bool selected, VoidCallback onTap) => Expanded(
+          child: GestureDetector(
+            onTap: onTap,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: selected ? AppColors.primary : AppColors.chip,
+                borderRadius: BorderRadius.circular(AppRadius.pill),
+              ),
+              child: Text(label,
+                  style: AppText.gothic(13, weight: FontWeight.w800, color: selected ? Colors.white : AppColors.textSecondary)),
+            ),
+          ),
+        );
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(color: AppColors.card, borderRadius: BorderRadius.circular(AppRadius.cover)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text('화면 모드', style: AppText.gothic(15, weight: FontWeight.w600, color: AppColors.textPrimary)),
+        const SizedBox(height: 10),
+        Row(children: [
+          chip('시스템', settings.themeMode == ThemeMode.system, () => notifier.setThemeMode(ThemeMode.system)),
+          const SizedBox(width: 8),
+          chip('라이트', settings.themeMode == ThemeMode.light, () => notifier.setThemeMode(ThemeMode.light)),
+          const SizedBox(width: 8),
+          chip('다크', settings.themeMode == ThemeMode.dark, () => notifier.setThemeMode(ThemeMode.dark)),
+        ]),
+        const SizedBox(height: 18),
+        Text('글자 크기', style: AppText.gothic(15, weight: FontWeight.w600, color: AppColors.textPrimary)),
+        const SizedBox(height: 10),
+        Row(children: [
+          for (var i = 0; i < textScaleSteps.length; i++) ...[
+            if (i > 0) const SizedBox(width: 8),
+            chip(textScaleSteps[i].$2, (settings.textScale - textScaleSteps[i].$1).abs() < 0.01,
+                () => notifier.setTextScale(textScaleSteps[i].$1)),
+          ],
+        ]),
+        const SizedBox(height: 12),
+        Text('이 글자 크기로 앱 전체가 보여요', style: AppText.gothic(13, color: AppColors.textSecondary)),
+      ]),
+    );
+  }
+
   Widget _label(String text) => Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: Text(text, style: AppText.gothic(12, weight: FontWeight.w600, color: AppColors.textSecondary)),
@@ -159,7 +211,7 @@ class SettingsScreen extends ConsumerWidget {
         child: Container(
           constraints: const BoxConstraints(minHeight: 60),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(AppRadius.cover)),
+          decoration: BoxDecoration(color: AppColors.card, borderRadius: BorderRadius.circular(AppRadius.cover)),
           child: Row(children: [
             Expanded(
               child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [

@@ -8,6 +8,7 @@ import '../../core/models/stats.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
+import '../../shared/widgets/skeleton.dart';
 import '../../shared/widgets/gradient_backdrop.dart';
 import '../../shared/widgets/avatar.dart';
 import '../../shared/widgets/brand_chip.dart';
@@ -57,10 +58,7 @@ class RankingScreen extends ConsumerWidget {
                 const SizedBox(height: 14),
               ],
               ranking.when(
-                loading: () => const Padding(
-                  padding: EdgeInsets.all(40),
-                  child: Center(child: CircularProgressIndicator(color: AppColors.lavender)),
-                ),
+                loading: () => const SkeletonRows(count: 6),
                 error: (e, _) => Padding(
                   padding: const EdgeInsets.all(24),
                   child: Column(children: [
@@ -159,12 +157,12 @@ class _RankRow extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.card,
           borderRadius: BorderRadius.circular(AppRadius.cover),
           border: Border.all(color: AppColors.border),
         ),
         child: Row(children: [
-          SizedBox(width: 24, child: Text('${rank.rank}', style: AppText.display(22, color: AppColors.primary))),
+          SizedBox(width: 24, child: Text('${rank.rank}', style: AppText.display(22, color: AppColors.accent))),
           const SizedBox(width: 12),
           Avatar(nickname: rank.nickname, imageUrl: rank.profileImageUrl, size: 36),
           const SizedBox(width: 12),
@@ -185,7 +183,7 @@ class _RankRow extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(color: const Color(0x29672BF4), borderRadius: BorderRadius.circular(AppRadius.pill)),
             child: Text('★ ${(rank.averageRating ?? 0).toStringAsFixed(1)}',
-                style: AppText.mixed(13, weight: FontWeight.w800, color: const Color(0xFF3B09B0))),
+                style: AppText.mixed(13, weight: FontWeight.w800, color: (AppColors.isDark ? AppColors.lavender : const Color(0xFF3B09B0)))),
           ),
         ]),
       ),

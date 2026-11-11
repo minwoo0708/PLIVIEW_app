@@ -7,6 +7,7 @@ import '../../core/models/stats.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
+import '../../shared/widgets/skeleton.dart';
 import '../../shared/widgets/gradient_backdrop.dart';
 import '../../shared/widgets/avatar.dart';
 import '../../shared/widgets/brand_chip.dart';
@@ -36,9 +37,14 @@ class CuratorScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 12),
               profile.when(
-                loading: () => const Padding(
-                  padding: EdgeInsets.all(40),
-                  child: Center(child: CircularProgressIndicator(color: AppColors.lavender)),
+                loading: () => const Shimmer(
+                  child: Column(children: [
+                    SkeletonBox(width: 80, height: 80, radius: 40),
+                    SizedBox(height: 12),
+                    SkeletonBox(width: 140, height: 22),
+                    SizedBox(height: 14),
+                    SkeletonBox(height: 64, radius: 14),
+                  ]),
                 ),
                 error: (e, _) => Padding(
                   padding: const EdgeInsets.all(24),
@@ -56,10 +62,7 @@ class CuratorScreen extends ConsumerWidget {
               AdaptiveColor(onDark: Colors.white, onLight: AppColors.textPrimary, builder: (_, c) => Text('플리 인기순', style: AppText.gothic(16, weight: FontWeight.w800, color: c))),
               const SizedBox(height: 12),
               playlists.when(
-                loading: () => const Padding(
-                  padding: EdgeInsets.all(24),
-                  child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
-                ),
+                loading: () => const SkeletonGrid(rows: 2),
                 error: (e, _) => Text(e is ApiException ? e.userMessage : '플리를 불러올 수 없어요.',
                     style: AppText.gothic(14, color: AppColors.textSecondary)),
                 data: (list) => list.isEmpty
@@ -91,11 +94,11 @@ class _Header extends StatelessWidget {
     Widget metric(String label, String value) => Expanded(
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 12),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(AppRadius.scoreButton)),
+            decoration: BoxDecoration(color: AppColors.card, borderRadius: BorderRadius.circular(AppRadius.scoreButton)),
             child: Column(children: [
               Text(label, style: AppText.gothic(11, weight: FontWeight.w500, color: AppColors.textSecondary)),
               const SizedBox(height: 2),
-              Text(value, style: AppText.display(20, color: AppColors.primary)),
+              Text(value, style: AppText.display(20, color: AppColors.accent)),
             ]),
           ),
         );

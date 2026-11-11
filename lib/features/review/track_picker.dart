@@ -9,6 +9,7 @@ import '../../core/models/review.dart';
 import '../../core/models/spotify_item.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
+import '../../shared/widgets/skeleton.dart';
 import '../../shared/widgets/cover_image.dart';
 
 /// 하이라이트(최고의 곡 등)로 고를 곡을 선택하는 시트.
@@ -115,7 +116,7 @@ class _TrackPickerSheetState extends ConsumerState<_TrackPickerSheet> {
                 height: 46,
                 padding: const EdgeInsets.symmetric(horizontal: 14),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.card,
                   borderRadius: BorderRadius.circular(AppRadius.pill),
                   border: Border.all(color: AppColors.border),
                 ),
@@ -137,7 +138,7 @@ class _TrackPickerSheetState extends ConsumerState<_TrackPickerSheet> {
             ),
           Expanded(
             child: _loading
-                ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+                ? const Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: SkeletonRows(count: 5, coverSize: 40))
                 : _error != null
                     ? Center(child: Text(_error!, style: AppText.gothic(14, color: AppColors.textSecondary)))
                     : tracks.isEmpty
@@ -158,7 +159,7 @@ class _TrackPickerSheetState extends ConsumerState<_TrackPickerSheet> {
                                 child: Container(
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: AppColors.card,
                                     borderRadius: BorderRadius.circular(AppRadius.scoreButton),
                                     border: Border.all(color: AppColors.border),
                                   ),
@@ -167,7 +168,7 @@ class _TrackPickerSheetState extends ConsumerState<_TrackPickerSheet> {
                                       SizedBox(
                                         width: 24,
                                         child: Text('${i + 1}',
-                                            style: AppText.grotesk(13, weight: FontWeight.w500, color: AppColors.primary)),
+                                            style: AppText.grotesk(13, weight: FontWeight.w500, color: AppColors.accent)),
                                       )
                                     else ...[
                                       CoverImage(url: t.imageUrl, size: 40, radius: 10, seed: t.id),

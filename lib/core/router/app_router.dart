@@ -49,6 +49,7 @@ abstract final class Routes {
 class _AuthRefresh extends ChangeNotifier {
   _AuthRefresh(Ref ref) {
     ref.listen<AuthState>(authControllerProvider, (_, _) => notifyListeners());
+    ref.listen<bool>(splashDoneProvider, (_, _) => notifyListeners());
   }
 }
 
@@ -64,7 +65,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       final loc = state.matchedLocation;
       const publicRoutes = {Routes.start, Routes.login, Routes.signup};
 
-      if (auth is AuthLoading) return loc == Routes.splash ? null : Routes.splash;
+      // 로그인 확인이 끝났어도 스플래시를 최소 시간은 보여 줍니다.
+      final splashDone = ref.read(splashDoneProvider);
+      if (auth is AuthLoading || !splashDone) return loc == Routes.splash ? null : Routes.splash;
       if (auth is SignedOut) return publicRoutes.contains(loc) ? null : Routes.start;
       // 로그인 상태: 인증 화면에 머물지 않고 홈으로
       if (loc == Routes.splash || publicRoutes.contains(loc)) return Routes.home;

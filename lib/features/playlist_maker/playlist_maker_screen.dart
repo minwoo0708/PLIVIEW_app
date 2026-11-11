@@ -11,6 +11,7 @@ import '../../core/spotify/spotify_auth.dart';
 import '../../core/spotify/spotify_user_api.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
+import '../../shared/widgets/skeleton.dart';
 import '../../shared/widgets/brand_chip.dart';
 import '../../shared/widgets/cover_image.dart';
 import '../../shared/widgets/gradient_backdrop.dart';
@@ -146,10 +147,7 @@ class _PlaylistMakerScreenState extends ConsumerState<PlaylistMakerScreen> {
                 const SizedBox.shrink()
               else
                 reviews.when(
-                  loading: () => const Padding(
-                    padding: EdgeInsets.all(40),
-                    child: Center(child: CircularProgressIndicator(color: AppColors.lavender)),
-                  ),
+                  loading: () => const SkeletonRows(count: 5),
                   error: (e, _) => _notice(e is ApiException ? e.userMessage : '리뷰를 불러올 수 없어요.'),
                   data: (all) {
                     final tracks = all.where((r) => r.type == ItemType.track).toList();
@@ -221,7 +219,7 @@ class _PlaylistMakerScreenState extends ConsumerState<PlaylistMakerScreen> {
       Container(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.card,
           borderRadius: BorderRadius.circular(AppRadius.cover),
           border: Border.all(color: AppColors.border),
         ),
@@ -260,7 +258,7 @@ class _PlaylistMakerScreenState extends ConsumerState<PlaylistMakerScreen> {
   Widget _done() => Container(
         padding: const EdgeInsets.all(22),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.card,
           borderRadius: BorderRadius.circular(AppRadius.card),
           border: Border.all(color: AppColors.border),
         ),
@@ -312,7 +310,7 @@ class _PlaylistMakerScreenState extends ConsumerState<PlaylistMakerScreen> {
         child: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.card,
             borderRadius: BorderRadius.circular(AppRadius.cover),
             border: Border.all(color: checked ? AppColors.primary : AppColors.border),
           ),
@@ -335,7 +333,7 @@ class _PlaylistMakerScreenState extends ConsumerState<PlaylistMakerScreen> {
                       style: AppText.mixed(12, color: AppColors.textSecondary)),
               ]),
             ),
-            Text('★ ${r.rating.toStringAsFixed(1)}', style: AppText.mixed(13, weight: FontWeight.w700, color: AppColors.primary)),
+            Text('★ ${r.rating.toStringAsFixed(1)}', style: AppText.mixed(13, weight: FontWeight.w700, color: AppColors.accent)),
           ]),
         ),
       ),

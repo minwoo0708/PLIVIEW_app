@@ -8,6 +8,7 @@ import '../../core/models/spotify_item.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
+import '../../shared/widgets/skeleton.dart';
 import '../../shared/widgets/gradient_backdrop.dart';
 import '../../shared/widgets/brand_chip.dart';
 import '../../shared/widgets/item_tile.dart';
@@ -41,7 +42,7 @@ class ArtistScreen extends ConsumerWidget {
             ),
             Expanded(
               child: albums.when(
-                loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+                loading: () => const Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: SkeletonGrid(rows: 3)),
                 error: (e, _) => Center(
                   child: Text(e is ApiException ? e.userMessage : '앨범을 불러올 수 없어요.',
                       style: AppText.gothic(14, color: AppColors.textSecondary)),
